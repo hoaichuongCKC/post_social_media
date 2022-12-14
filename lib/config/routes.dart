@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:post_media_social/pages/login/login_page.dart';
 import 'package:post_media_social/pages/splash/splash_page.dart';
 
 class AppRoutes {
@@ -9,7 +10,8 @@ class AppRoutes {
     switch (settings.name) {
       case "/splash":
         return MaterialPageRoute(builder: (_) => const SplashPage());
-
+      case "/login":
+        return MaterialPageRoute(builder: (_) => const LoginPage());
       default:
         return _errorRoute();
     }

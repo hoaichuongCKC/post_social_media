@@ -1,13 +1,43 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:post_media_social/config/colors.dart';
+import 'package:post_media_social/config/routes.dart';
 import 'package:post_media_social/config/style_text.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
+
+  @override
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  @override
+  void initState() {
+    Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (timer.tick == 2) {
+        AppRoutes.popAndPushNamed("/login");
+        timer.cancel();
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final spinkit = SpinKitFadingCircle(
+      itemBuilder: (BuildContext context, int index) {
+        return const DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+          ),
+        );
+      },
+    );
     return Scaffold(
       body: Center(
         child: Padding(
@@ -28,7 +58,7 @@ class SplashPage extends StatelessWidget {
                   flex: 1,
                   fit: FlexFit.tight,
                   child: FractionallySizedBox(
-                    heightFactor: 0.3,
+                    heightFactor: 0.25,
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: Text(
@@ -38,7 +68,10 @@ class SplashPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Spacer(flex: 2),
+                Expanded(
+                  flex: 2,
+                  child: spinkit,
+                )
               ],
             ),
           ),
