@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:post_media_social/common/widgets/button_cts.dart';
 import 'package:post_media_social/config/colors.dart';
+import 'package:post_media_social/config/routes.dart';
 import 'package:post_media_social/config/style_text.dart';
 import 'package:post_media_social/pages/login/components/form_login_phone.dart';
 import 'package:post_media_social/pages/login/components/form_login_username_pass.dart';
@@ -76,7 +77,9 @@ class _LoginPageState extends State<LoginPage> {
                     ButtonCustom(
                       text: "Log in",
                       onPressed: () {
-                        if (form.currentState!.validate()) {}
+                        if (form.currentState!.validate()) {
+                          AppRoutes.pushNamed("/login/otp");
+                        }
                       },
                       width: size.width * 0.6,
                       height: size.height * .06,
