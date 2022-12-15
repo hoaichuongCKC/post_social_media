@@ -13,13 +13,14 @@ class FormLoginUsernamePassword extends StatelessWidget {
   final TextEditingController controllersecond;
   @override
   Widget build(BuildContext context) {
+    bool isShowPassword = true;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ConstrainedBox(
           constraints: const BoxConstraints(
-            maxHeight: 30.0,
-            minHeight: 20.0,
+            maxHeight: 24.0,
+            minHeight: 16.0,
           ),
           child: SizedBox(
             width: size.width,
@@ -28,7 +29,7 @@ class FormLoginUsernamePassword extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 'Username',
-                style: AppStyleText.normalStyleColor,
+                style: AppStyleText.smallStyleColor,
               ),
             ),
           ),
@@ -41,6 +42,10 @@ class FormLoginUsernamePassword extends StatelessWidget {
             }
             return null;
           },
+          style: const TextStyle(
+            fontSize: 14.0,
+            color: AppColors.disable,
+          ),
           decoration: const InputDecoration(
             errorStyle: TextStyle(
               fontSize: 12.0,
@@ -71,8 +76,8 @@ class FormLoginUsernamePassword extends StatelessWidget {
         ),
         ConstrainedBox(
           constraints: const BoxConstraints(
-            maxHeight: 30.0,
-            minHeight: 20.0,
+            maxHeight: 24.0,
+            minHeight: 16.0,
           ),
           child: SizedBox(
             width: size.width,
@@ -81,42 +86,60 @@ class FormLoginUsernamePassword extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 'Password',
-                style: AppStyleText.normalStyleColor,
+                style: AppStyleText.smallStyleColor,
               ),
             ),
           ),
         ),
-        TextFormField(
-          obscureText: true,
-          controller: controllersecond,
-          validator: (value) {
-            if (value!.isEmpty) {
-              return "Invalid password.";
-            }
-            return null;
-          },
-          decoration: const InputDecoration(
-            errorStyle: TextStyle(
-              fontSize: 12.0,
-              color: Colors.red,
-            ),
-            hintText: 'Enter the password',
-            hintStyle: TextStyle(
-              fontSize: 12.0,
+        StatefulBuilder(builder: (context, setState) {
+          return TextFormField(
+            obscureText: isShowPassword,
+            controller: controllersecond,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "Invalid password.";
+              }
+              return null;
+            },
+            style: const TextStyle(
+              fontSize: 14.0,
               color: AppColors.disable,
             ),
-            border: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: AppColors.primary,
+            decoration: InputDecoration(
+              errorStyle: const TextStyle(
+                fontSize: 12.0,
+                color: Colors.red,
+              ),
+              suffixIcon: InkWell(
+                onTap: () {
+                  isShowPassword = !isShowPassword;
+                  setState(() {});
+                },
+                borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+                child: Icon(
+                  isShowPassword ? Icons.visibility : Icons.visibility_off,
+                  size: 18.0,
+                  color: AppColors.primary,
+                ),
+              ),
+              hintText: 'Enter the password',
+              hintStyle: const TextStyle(
+                fontSize: 12.0,
+                color: AppColors.disable,
+              ),
+              border: const UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: AppColors.primary,
+                ),
+              ),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(
+                  color: AppColors.primary,
+                ),
               ),
             ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-        ),
+          );
+        }),
       ],
     );
   }

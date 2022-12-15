@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:post_media_social/common/animations/screen_push/slide_to_left.dart';
 import 'package:post_media_social/pages/login/login_page.dart';
+import 'package:post_media_social/pages/otp/otp_page.dart';
 import 'package:post_media_social/pages/splash/splash_page.dart';
 
 class AppRoutes {
@@ -12,6 +14,8 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const SplashPage());
       case "/login":
         return MaterialPageRoute(builder: (_) => const LoginPage());
+      case "/login/otp":
+        return SlideToLeft(child: const OtpPage());
       default:
         return _errorRoute();
     }

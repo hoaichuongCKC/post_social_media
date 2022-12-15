@@ -32,6 +32,7 @@ dependencies:
   #font_text
   google_fonts: ^3.0.1
   flutter_spinkit: ^5.1.0
+  pin_code_fields: ^7.4.0
 
 dev_dependencies:
 
