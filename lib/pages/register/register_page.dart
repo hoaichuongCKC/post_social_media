@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:post_media_social/common/components/label_text_form_field.dart';
+import 'package:post_media_social/common/popup/popup_control.dart';
 import 'package:post_media_social/common/widgets/arrow_back.dart';
 import 'package:post_media_social/common/widgets/button_cts.dart';
 import 'package:post_media_social/config/style_text.dart';
@@ -51,6 +52,12 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: usernameController,
                       label: "Username",
                       hintText: "Enter the username",
+                      validator: (p0) {
+                        if (p0!.isEmpty) {
+                          return "Invalid username";
+                        }
+                        return null;
+                      },
                     ),
                     ConstrainedBox(
                       constraints: const BoxConstraints(
@@ -66,6 +73,12 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: displayNameController,
                       label: "Display name",
                       hintText: "Enter the display name",
+                      validator: (p0) {
+                        if (p0!.isEmpty) {
+                          return "Invalid display name";
+                        }
+                        return null;
+                      },
                     ),
                     ConstrainedBox(
                       constraints: const BoxConstraints(
@@ -81,6 +94,12 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: passwordController,
                       label: "Password",
                       hintText: "Enter the password",
+                      validator: (p0) {
+                        if (p0!.isEmpty) {
+                          return "Invalid password";
+                        }
+                        return null;
+                      },
                     ),
                     ConstrainedBox(
                       constraints: const BoxConstraints(
@@ -96,6 +115,12 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: confirmPasswordController,
                       label: "Confirm password",
                       hintText: "Enter the confirm password",
+                      validator: (p0) {
+                        if (p0!.isEmpty) {
+                          return "Invalid confirm password";
+                        }
+                        return null;
+                      },
                     ),
                     ConstrainedBox(
                       constraints: const BoxConstraints(
@@ -156,6 +181,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   text: "Register",
                   onPressed: () {
                     if (formKey.currentState!.validate()) {}
+                    PopupControl.instance.showAuthError(context: context);
                   },
                   width: size.width * 0.6,
                   height: size.height * .07,

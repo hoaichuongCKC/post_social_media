@@ -1,0 +1,11 @@
+<svg width="176" height="155" viewBox="0 0 176 155" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="89" cy="86" r="66" fill="#44C75D"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M88.5 83.625C94.8512 83.625 100 78.4763 100 72.125C100 65.7737 94.8512 60.625 88.5 60.625C82.1487 60.625 77 65.7737 77 72.125C77 78.4763 82.1487 83.625 88.5 83.625ZM88.5 112.375C99.6147 112.375 108.625 107.226 108.625 100.875C108.625 94.5238 99.6147 89.375 88.5 89.375C77.3853 89.375 68.375 94.5238 68.375 100.875C68.375 107.226 77.3853 112.375 88.5 112.375Z" fill="white"/>
+<circle r="6.5" transform="matrix(1 0 0 -1 6.5 25.5)" fill="#44C75D"/>
+<circle r="6" transform="matrix(1 0 0 -1 170 38)" fill="#44C75D"/>
+<circle r="2.5" transform="matrix(1 0 0 -1 96.5 2.5)" fill="#44C75D"/>
+<circle r="2.5" transform="matrix(1 0 0 -1 167.5 92.5)" fill="#44C75D"/>
+<circle r="2.5" transform="matrix(1 0 0 -1 146.5 136.5)" fill="#44C75D"/>
+<circle r="2.5" transform="matrix(1 0 0 -1 38.5 152.5)" fill="#44C75D"/>
+<circle r="2.5" transform="matrix(1 0 0 -1 13.5 106.5)" fill="#44C75D"/>
+</svg>

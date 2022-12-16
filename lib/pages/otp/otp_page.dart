@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:post_media_social/common/widgets/arrow_back.dart';
 import 'package:post_media_social/config/colors.dart';
-import 'package:post_media_social/config/routes.dart';
 
 class OtpPage extends StatefulWidget {
   const OtpPage({super.key});
