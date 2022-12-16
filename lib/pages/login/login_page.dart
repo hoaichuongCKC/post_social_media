@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:post_media_social/common/widgets/button_cts.dart';
 import 'package:post_media_social/config/colors.dart';
+import 'package:post_media_social/config/constants.dart';
 import 'package:post_media_social/config/routes.dart';
 import 'package:post_media_social/config/style_text.dart';
 import 'package:post_media_social/pages/login/components/form_login_phone.dart';
@@ -78,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                       text: "Log in",
                       onPressed: () {
                         if (form.currentState!.validate()) {
-                          AppRoutes.pushNamed("/login/otp");
+                          AppRoutes.pushNamed(otpPath);
                         }
                       },
                       width: size.width * 0.6,
@@ -197,7 +198,7 @@ class FooterLogin extends StatelessWidget {
                   const SizedBox(width: 10),
                   FittedBox(
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () => AppRoutes.pushNamed(registerPath),
                       child: const Text(
                         'Register',
                         style: TextStyle(

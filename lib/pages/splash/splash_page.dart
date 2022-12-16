@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:post_media_social/config/colors.dart';
+import 'package:post_media_social/config/constants.dart';
 import 'package:post_media_social/config/routes.dart';
 import 'package:post_media_social/config/style_text.dart';
 
@@ -19,7 +20,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     Timer.periodic(const Duration(seconds: 2), (timer) {
       if (timer.tick == 2) {
-        AppRoutes.popAndPushNamed("/login");
+        AppRoutes.popAndPushNamed(loginPath);
         timer.cancel();
       }
     });
