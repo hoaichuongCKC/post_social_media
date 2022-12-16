@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:post_media_social/common/animations/screen_push/slide_to_left.dart';
+import 'package:post_media_social/config/constants.dart';
 import 'package:post_media_social/pages/login/login_page.dart';
 import 'package:post_media_social/pages/otp/otp_page.dart';
+import 'package:post_media_social/pages/register/register_page.dart';
 import 'package:post_media_social/pages/splash/splash_page.dart';
 
 class AppRoutes {
@@ -10,12 +12,14 @@ class AppRoutes {
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case "/splash":
+      case splashPath:
         return MaterialPageRoute(builder: (_) => const SplashPage());
-      case "/login":
+      case loginPath:
         return MaterialPageRoute(builder: (_) => const LoginPage());
-      case "/login/otp":
+      case otpPath:
         return SlideToLeft(child: const OtpPage());
+      case registerPath:
+        return SlideToLeft(child: const RegisterPage());
       default:
         return _errorRoute();
     }

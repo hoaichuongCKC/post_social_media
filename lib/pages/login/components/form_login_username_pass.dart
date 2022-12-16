@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:post_media_social/common/components/label_text_form_field.dart';
 import 'package:post_media_social/config/colors.dart';
 import 'package:post_media_social/config/style_text.dart';
 
@@ -17,56 +18,11 @@ class FormLoginUsernamePassword extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxHeight: 24.0,
-            minHeight: 16.0,
-          ),
-          child: SizedBox(
-            width: size.width,
-            height: size.height * 0.04,
-            child: FittedBox(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Username',
-                style: AppStyleText.smallStyleColor,
-              ),
-            ),
-          ),
-        ),
-        TextFormField(
+        LabelTextFormField(
+          size: size,
           controller: controllerfirst,
-          validator: (value) {
-            if (value!.isEmpty) {
-              return "Invalid username.";
-            }
-            return null;
-          },
-          style: const TextStyle(
-            fontSize: 14.0,
-            color: AppColors.disable,
-          ),
-          decoration: const InputDecoration(
-            errorStyle: TextStyle(
-              fontSize: 12.0,
-              color: Colors.red,
-            ),
-            hintText: 'Enter the username',
-            hintStyle: TextStyle(
-              fontSize: 12.0,
-              color: AppColors.disable,
-            ),
-            border: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: AppColors.primary,
-              ),
-            ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: AppColors.primary,
-              ),
-            ),
-          ),
+          label: "Username",
+          hintText: "Enter the username",
         ),
         ConstrainedBox(
           constraints: const BoxConstraints(
