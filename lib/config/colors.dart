@@ -8,4 +8,7 @@ class AppColors {
   static const dark = Color.fromARGB(255, 0, 0, 0);
 
   static const light = Color.fromARGB(255, 255, 255, 255);
+
+  static const error = Colors.red;
+  static const success = Colors.green;
 }

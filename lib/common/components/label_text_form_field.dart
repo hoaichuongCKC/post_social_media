@@ -8,11 +8,13 @@ class LabelTextFormField extends StatelessWidget {
       required this.size,
       required this.controller,
       required this.label,
-      required this.hintText});
+      required this.hintText,
+      this.validator});
   final Size size;
   final TextEditingController controller;
   final String label;
   final String hintText;
+  final String? Function(String?)? validator;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -37,12 +39,7 @@ class LabelTextFormField extends StatelessWidget {
         ),
         TextFormField(
           controller: controller,
-          validator: (value) {
-            if (value!.isEmpty) {
-              return "Invalid phone number.";
-            }
-            return null;
-          },
+          validator: validator,
           style: const TextStyle(
             fontSize: 14.0,
             color: AppColors.disable,
