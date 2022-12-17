@@ -22,8 +22,8 @@ class LabelTextFormField extends StatelessWidget {
       children: [
         ConstrainedBox(
           constraints: const BoxConstraints(
-            maxHeight: 30.0,
-            minHeight: 20.0,
+            maxHeight: 25.0,
+            minHeight: 18.0,
           ),
           child: SizedBox(
             width: size.width,
@@ -32,7 +32,7 @@ class LabelTextFormField extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 label,
-                style: AppStyleText.normalStyleColor,
+                style: AppStyleText.smallStyleColor,
               ),
             ),
           ),
@@ -46,31 +46,7 @@ class LabelTextFormField extends StatelessWidget {
             fontWeight: FontWeight.w400,
           ),
           decoration: InputDecoration(
-            errorStyle: const TextStyle(
-              fontSize: 12.0,
-              color: Colors.red,
-            ),
             hintText: hintText,
-            hintStyle: const TextStyle(
-              fontSize: 12.0,
-              color: AppColors.disable,
-            ),
-            border: const UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: AppColors.primary,
-              ),
-            ),
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: AppColors.primary,
-              ),
-            ),
-            errorBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.red,
-                width: 0.8,
-              ),
-            ),
           ),
         ),
       ],

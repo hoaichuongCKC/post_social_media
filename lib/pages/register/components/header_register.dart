@@ -15,6 +15,7 @@ class HeaderRegister extends StatelessWidget {
     return ConstrainedBox(
       constraints: const BoxConstraints(
         minHeight: 150.0,
+        maxHeight: 200.0,
       ),
       child: SizedBox(
         height: size.height * 0.35,

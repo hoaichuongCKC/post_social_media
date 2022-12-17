@@ -133,8 +133,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     ConstrainedBox(
                       constraints: const BoxConstraints(
-                        maxHeight: 30.0,
-                        minHeight: 20.0,
+                        maxHeight: 25.0,
+                        minHeight: 18.0,
                       ),
                       child: SizedBox(
                         width: size.width,

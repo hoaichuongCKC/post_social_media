@@ -17,5 +17,34 @@ var swatchCustom = const MaterialColor(
   },
 );
 
-ThemeData themeApp =
-    ThemeData(primaryColor: AppColors.primary, primarySwatch: swatchCustom);
+ThemeData themeApp = ThemeData(
+    primaryColor: AppColors.primary,
+    useMaterial3: true,
+    primarySwatch: swatchCustom,
+    indicatorColor: AppColors.primary,
+    inputDecorationTheme: const InputDecorationTheme(
+      errorStyle: TextStyle(
+        fontSize: 12.0,
+        color: Colors.red,
+      ),
+      hintStyle: TextStyle(
+        fontSize: 12.0,
+        color: AppColors.disable,
+      ),
+      border: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: AppColors.primary,
+        ),
+      ),
+      enabledBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: AppColors.primary,
+        ),
+      ),
+      errorBorder: UnderlineInputBorder(
+        borderSide: BorderSide(
+          color: Colors.red,
+          width: 0.8,
+        ),
+      ),
+    ));

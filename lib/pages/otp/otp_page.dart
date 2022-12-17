@@ -38,96 +38,98 @@ class _OtpPageState extends State<OtpPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: AppColors.light,
-      body: SizedBox.expand(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const ArrowBackWidget(),
-              HeaderOtp(size: size),
-              Flexible(
-                flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Form(
-                      key: formKey,
-                      child: PinCodeTextField(
-                        scrollPadding: const EdgeInsets.all(0.0),
-                        appContext: context,
-                        backgroundColor: AppColors.light,
-                        pastedTextStyle: TextStyle(
-                          color: Colors.green.shade600,
-                          fontWeight: FontWeight.bold,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: AppColors.light,
+        body: SizedBox.expand(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const ArrowBackWidget(),
+                HeaderOtp(size: size),
+                Flexible(
+                  flex: 1,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Form(
+                        key: formKey,
+                        child: PinCodeTextField(
+                          scrollPadding: const EdgeInsets.all(0.0),
+                          appContext: context,
+                          backgroundColor: AppColors.light,
+                          pastedTextStyle: TextStyle(
+                            color: Colors.green.shade600,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          length: 6,
+                          textStyle: const TextStyle(
+                            fontSize: 14.0,
+                            color: AppColors.dark,
+                            fontWeight: FontWeight.w300,
+                          ),
+                          cursorWidth: 1.0,
+                          cursorHeight: 6.0,
+                          blinkWhenObscuring: true,
+                          animationType: AnimationType.fade,
+                          validator: (v) {
+                            if (v!.length < 3) {
+                              return "I'm from validator";
+                            } else {
+                              return null;
+                            }
+                          },
+                          pinTheme: PinTheme(
+                            shape: PinCodeFieldShape.box,
+                            borderRadius: BorderRadius.circular(5),
+                            fieldHeight: 30,
+                            fieldWidth: 30,
+                            activeColor: AppColors.primary,
+                            activeFillColor: Colors.white,
+                            selectedFillColor: AppColors.light,
+                            selectedColor: AppColors.primary,
+                            inactiveColor: AppColors.primary,
+                            inactiveFillColor: AppColors.light,
+                            borderWidth: 1.0,
+                            fieldOuterPadding:
+                                const EdgeInsets.symmetric(vertical: 10.0),
+                          ),
+                          cursorColor: AppColors.disable,
+                          animationDuration: const Duration(milliseconds: 300),
+                          enableActiveFill: true,
+                          errorAnimationController: errorController,
+                          controller: textEditingController,
+                          keyboardType: TextInputType.number,
+                          // boxShadows: const [
+                          //   BoxShadow(
+                          //     offset: Offset(0, 1),
+                          //     color: Colors.black12,
+                          //     blurRadius: 10,
+                          //   )
+                          // ],
+                          onCompleted: (v) {
+                            debugPrint("Completed");
+                          },
+                          // onTap: () {
+                          //   print("Pressed");
+                          // },
+                          onChanged: (value) {},
+                          beforeTextPaste: (text) {
+                            debugPrint("Allowing to paste $text");
+                            //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
+                            //but you can show anything you want here, like your pop up saying wrong paste format or etc
+                            return true;
+                          },
                         ),
-                        length: 6,
-                        textStyle: const TextStyle(
-                          fontSize: 14.0,
-                          color: AppColors.dark,
-                          fontWeight: FontWeight.w300,
-                        ),
-                        cursorWidth: 1.0,
-                        cursorHeight: 6.0,
-                        blinkWhenObscuring: true,
-                        animationType: AnimationType.fade,
-                        validator: (v) {
-                          if (v!.length < 3) {
-                            return "I'm from validator";
-                          } else {
-                            return null;
-                          }
-                        },
-                        pinTheme: PinTheme(
-                          shape: PinCodeFieldShape.box,
-                          borderRadius: BorderRadius.circular(5),
-                          fieldHeight: 30,
-                          fieldWidth: 30,
-                          activeColor: AppColors.primary,
-                          activeFillColor: Colors.white,
-                          selectedFillColor: AppColors.light,
-                          selectedColor: AppColors.primary,
-                          inactiveColor: AppColors.primary,
-                          inactiveFillColor: AppColors.light,
-                          borderWidth: 1.0,
-                          fieldOuterPadding:
-                              const EdgeInsets.symmetric(vertical: 10.0),
-                        ),
-                        cursorColor: AppColors.disable,
-                        animationDuration: const Duration(milliseconds: 300),
-                        enableActiveFill: true,
-                        errorAnimationController: errorController,
-                        controller: textEditingController,
-                        keyboardType: TextInputType.number,
-                        // boxShadows: const [
-                        //   BoxShadow(
-                        //     offset: Offset(0, 1),
-                        //     color: Colors.black12,
-                        //     blurRadius: 10,
-                        //   )
-                        // ],
-                        onCompleted: (v) {
-                          debugPrint("Completed");
-                        },
-                        // onTap: () {
-                        //   print("Pressed");
-                        // },
-                        onChanged: (value) {},
-                        beforeTextPaste: (text) {
-                          debugPrint("Allowing to paste $text");
-                          //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                          //but you can show anything you want here, like your pop up saying wrong paste format or etc
-                          return true;
-                        },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const Spacer(flex: 4),
-            ],
+                const Spacer(flex: 4),
+              ],
+            ),
           ),
         ),
       ),

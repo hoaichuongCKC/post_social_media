@@ -25,10 +25,10 @@ class ShowAuthError extends StatelessWidget {
           ),
           width: size.width * .75,
           height: size.height * .55,
-          // constraints: const BoxConstraints(
-          //   maxHeight: 300.0,
-          //   minHeight: 200.0,
-          // ),
+          constraints: const BoxConstraints(
+            maxHeight: 350.0,
+            minHeight: 200.0,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
