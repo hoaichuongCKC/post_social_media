@@ -8,7 +8,7 @@ class ArrowBackWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
+      padding: const EdgeInsets.only(top: 25.0),
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           maxHeight: 25.0,
