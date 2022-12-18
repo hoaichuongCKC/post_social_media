@@ -1,6 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:post_media_social/config/colors.dart';
+import 'package:post_media_social/config/export.dart';
 
 class HeaderHome extends StatelessWidget {
   const HeaderHome({
@@ -23,23 +21,23 @@ class HeaderHome extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
+                  Text(
                     'Hello Jotaro',
-                    style: TextStyle(
+                    style: GoogleFonts.robotoMono(
                       fontSize: 22.0,
                       color: AppColors.dark,
                       fontWeight: FontWeight.w600,
-                      overflow: TextOverflow.ellipsis,
                     ),
+                    overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
                   const SizedBox(height: 8.0),
                   Text(
                     'What would you like to post today?',
-                    style: TextStyle(
+                    style: GoogleFonts.robotoMono(
                       fontSize: 16.0,
                       color: AppColors.dark.withOpacity(0.6),
-                      fontWeight: FontWeight.w300,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],

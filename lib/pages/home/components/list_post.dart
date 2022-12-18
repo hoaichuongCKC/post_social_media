@@ -55,7 +55,7 @@ class BodyPost extends StatelessWidget {
         const Padding(
           padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
           child: ExpandableText(
-            'Hello mọi người. \n Hôm nay thật là một ngày tuyệt vời',
+            'Hello mọi người.\nHôm nay thật là một ngày tuyệt vời',
             trimLines: 2,
           ),
         ),
