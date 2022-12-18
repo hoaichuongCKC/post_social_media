@@ -1,3 +1,4 @@
+import 'package:post_media_social/common/widgets/circle_avatar.dart';
 import 'package:post_media_social/config/export.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -117,42 +118,16 @@ class ProfilePage extends StatelessWidget {
         ),
         Positioned(
           top: size.height * .3 - 130 / 2,
-          child: _AvatarCircle(size: size),
-        ),
-      ],
-    );
-  }
-}
-
-class _AvatarCircle extends StatelessWidget {
-  const _AvatarCircle({
-    required this.size,
-  });
-
-  final Size size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(5.0),
-      height: 130,
-      width: 130,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.primary.withOpacity(0.5),
-      ),
-      child: const DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.primary,
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: CachedNetworkImageProvider(
-              "https://addisongreen.info/wp-content/uploads/2020/11/kieu-toc-dinh-nam-600x407-1.jpg",
-            ),
+          child: const CircleAvatarCst(
+            isHasBorder: true,
+            isCameraIcon: true,
+            width: 130,
+            height: 130,
+            urlAvatar:
+                'https://mondaycareer.com/wp-content/uploads/2020/11/anime-l%C3%A0-g%C3%AC-v%C3%A0-kh%C3%A1i-ni%E1%BB%87m.jpg',
           ),
         ),
-      ),
+      ],
     );
   }
 }

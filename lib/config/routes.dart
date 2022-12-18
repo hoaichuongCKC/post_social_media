@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:post_media_social/common/animations/screen_push/slide_to_left.dart';
 import 'package:post_media_social/config/constants.dart';
-import 'package:post_media_social/main.dart';
+import 'package:post_media_social/pages/home/home_page.dart';
 import 'package:post_media_social/pages/login/login_page.dart';
 import 'package:post_media_social/pages/otp/otp_page.dart';
 import 'package:post_media_social/pages/register/register_page.dart';
 import 'package:post_media_social/pages/splash/splash_page.dart';
+import 'package:post_media_social/pages/upload_post/upload_post_page.dart';
 
 class AppRoutes {
   static const String initRoute = homePath;
@@ -25,7 +26,9 @@ class AppRoutes {
 
       //[follow home]
       case homePath:
-        return MaterialPageRoute(builder: (_) => const MainPage());
+        return MaterialPageRoute(builder: (_) => const HomePage());
+      case uploadPostPath:
+        return MaterialPageRoute(builder: (_) => const UploadPostPage());
       default:
         return _errorRoute();
     }

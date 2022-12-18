@@ -19,17 +19,25 @@ class TabHome extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildTab(
-                urlIcon: "file.svg",
-                text: "New post",
-                main: MainAxisAlignment.start),
+              urlIcon: "file.svg",
+              text: "New post",
+              main: MainAxisAlignment.start,
+              onTap: () {
+                AppRoutes.pushNamed(uploadPostPath);
+              },
+            ),
             _buildTab(
-                urlIcon: "clipboard.svg",
-                text: "My post",
-                main: MainAxisAlignment.center),
+              urlIcon: "clipboard.svg",
+              text: "My post",
+              main: MainAxisAlignment.center,
+              onTap: () {},
+            ),
             _buildTab(
-                urlIcon: "notification.svg",
-                text: "Notification",
-                main: MainAxisAlignment.end),
+              urlIcon: "notification.svg",
+              text: "Notification",
+              main: MainAxisAlignment.end,
+              onTap: () {},
+            ),
           ],
         ),
       ),
@@ -39,27 +47,31 @@ class TabHome extends StatelessWidget {
   Widget _buildTab(
           {required String urlIcon,
           required String text,
-          required MainAxisAlignment main}) =>
+          required MainAxisAlignment main,
+          required VoidCallback onTap}) =>
       Expanded(
-        child: Row(
-          mainAxisAlignment: main,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              "assets/icons/$urlIcon",
-              width: 18.0,
-              height: 18.0,
-            ),
-            const SizedBox(width: 5.0),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 14.0,
-                color: AppColors.dark.withOpacity(0.6),
-                fontWeight: FontWeight.w300,
+        child: InkWell(
+          onTap: onTap,
+          child: Row(
+            mainAxisAlignment: main,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                "assets/icons/$urlIcon",
+                width: 18.0,
+                height: 18.0,
               ),
-            )
-          ],
+              const SizedBox(width: 5.0),
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: AppColors.dark.withOpacity(0.6),
+                  fontWeight: FontWeight.w300,
+                ),
+              )
+            ],
+          ),
         ),
       );
 }

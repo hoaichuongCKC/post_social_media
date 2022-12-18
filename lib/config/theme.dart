@@ -19,7 +19,12 @@ var swatchCustom = const MaterialColor(
 
 ThemeData themeApp = ThemeData(
     primaryColor: AppColors.primary,
-    useMaterial3: true,
+    appBarTheme: const AppBarTheme(
+      brightness: Brightness.light,
+      backgroundColor: AppColors.light,
+      elevation: 0.8,
+      centerTitle: true,
+    ),
     primarySwatch: swatchCustom,
     indicatorColor: AppColors.primary,
     inputDecorationTheme: const InputDecorationTheme(

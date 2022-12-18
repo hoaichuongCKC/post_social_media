@@ -6,3 +6,4 @@ const String otpPath = "$loginPath/otp";
 const String registerPath = "/register";
 //[Follow: home]
 const String homePath = "/home";
+const String uploadPostPath = "$homePath/upload-post";
