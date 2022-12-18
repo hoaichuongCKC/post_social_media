@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:post_media_social/config/colors.dart';
+import 'package:post_media_social/config/export.dart';
 
 class TabHome extends StatelessWidget {
   const TabHome({super.key});

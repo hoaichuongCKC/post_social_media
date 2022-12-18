@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:post_media_social/config/colors.dart';
+import 'package:post_media_social/config/export.dart';
 
 class ExpandableText extends StatefulWidget {
   const ExpandableText(
@@ -28,7 +27,7 @@ class ExpandableTextState extends State<ExpandableText> {
     const widgetColor = Colors.black;
     TextSpan link = TextSpan(
         text: _readMore ? "... Read more" : " Read less",
-        style: const TextStyle(
+        style: GoogleFonts.robotoMono(
           color: colorClickableText,
           fontSize: 12,
           fontWeight: FontWeight.w400,
@@ -67,7 +66,7 @@ class ExpandableTextState extends State<ExpandableText> {
         if (textPainter.didExceedMaxLines) {
           textSpan = TextSpan(
             text: _readMore ? widget.text.substring(0, endIndex) : widget.text,
-            style: const TextStyle(
+            style: GoogleFonts.robotoMono(
               color: widgetColor,
               fontSize: 14.0,
             ),
@@ -76,7 +75,7 @@ class ExpandableTextState extends State<ExpandableText> {
         } else {
           textSpan = TextSpan(
             text: widget.text,
-            style: const TextStyle(
+            style: GoogleFonts.robotoMono(
               color: widgetColor,
               fontSize: 14.0,
               height: 1.5,

@@ -26,7 +26,7 @@ class ArrowBackWidget extends StatelessWidget {
             borderRadius: const BorderRadius.all(Radius.circular(16.0)),
             child: const FittedBox(
               alignment: Alignment.centerLeft,
-              child: Icon(Icons.arrow_back_rounded, size: 20.0),
+              child: Icon(Icons.arrow_back_ios_new, size: 20.0),
             ),
           ),
         ),
