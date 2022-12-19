@@ -22,21 +22,19 @@ class TabHome extends StatelessWidget {
               urlIcon: "file.svg",
               text: "New post",
               main: MainAxisAlignment.start,
-              onTap: () {
-                AppRoutes.pushNamed(uploadPostPath);
-              },
+              onTap: () => AppRoutes.pushNamed(uploadPostPath),
             ),
             _buildTab(
               urlIcon: "clipboard.svg",
               text: "My post",
               main: MainAxisAlignment.center,
-              onTap: () {},
+              onTap: () => AppRoutes.pushNamed(myPostPath),
             ),
             _buildTab(
               urlIcon: "notification.svg",
               text: "Notification",
               main: MainAxisAlignment.end,
-              onTap: () {},
+              onTap: () => AppRoutes.pushNamed(notificationPath),
             ),
           ],
         ),

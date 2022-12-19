@@ -3,6 +3,8 @@ import 'package:post_media_social/common/animations/screen_push/slide_to_left.da
 import 'package:post_media_social/config/constants.dart';
 import 'package:post_media_social/pages/home/home_page.dart';
 import 'package:post_media_social/pages/login/login_page.dart';
+import 'package:post_media_social/pages/my_post/my_post_page.dart';
+import 'package:post_media_social/pages/notification/notification_page.dart';
 import 'package:post_media_social/pages/otp/otp_page.dart';
 import 'package:post_media_social/pages/register/register_page.dart';
 import 'package:post_media_social/pages/splash/splash_page.dart';
@@ -28,7 +30,11 @@ class AppRoutes {
       case homePath:
         return MaterialPageRoute(builder: (_) => const HomePage());
       case uploadPostPath:
-        return MaterialPageRoute(builder: (_) => const UploadPostPage());
+        return SlideToLeft(child: const UploadPostPage());
+      case myPostPath:
+        return SlideToLeft(child: const MyPostPage());
+      case notificationPath:
+        return SlideToLeft(child: const NotificationPage());
       default:
         return _errorRoute();
     }
