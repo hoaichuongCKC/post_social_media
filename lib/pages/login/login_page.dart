@@ -57,6 +57,12 @@ class _LoginPageState extends State<LoginPage> {
                               ? FormLoginPhone(
                                   key: const ValueKey('form-phone'),
                                   controller: xController,
+                                  onSubmitted: (p0) {
+                                    if (form.currentState!.validate()) {
+                                      AppRoutes.pushNamed(otpPath,
+                                          argument: p0);
+                                    }
+                                  },
                                   size: size,
                                 )
                               : FormLoginUsernamePassword(
@@ -79,7 +85,8 @@ class _LoginPageState extends State<LoginPage> {
                       text: "Log in",
                       onPressed: () {
                         if (form.currentState!.validate()) {
-                          AppRoutes.pushNamed(otpPath);
+                          AppRoutes.pushNamed(otpPath,
+                              argument: xController.text);
                         }
                       },
                       width: size.width * 0.6,

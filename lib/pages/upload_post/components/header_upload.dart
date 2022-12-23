@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:post_media_social/common/widgets/circle_avatar.dart';
 
 import '../../../config/export.dart';
@@ -21,8 +20,7 @@ class HeaderUploadPost extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const CircleAvatarCst(
-              width: 60,
-              height: 60.0,
+              radius: 60,
               urlAvatar:
                   "https://mondaycareer.com/wp-content/uploads/2020/11/anime-l%C3%A0-g%C3%AC-v%C3%A0-kh%C3%A1i-ni%E1%BB%87m.jpg",
             ),

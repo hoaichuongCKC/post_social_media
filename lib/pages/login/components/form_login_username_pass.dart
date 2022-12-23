@@ -23,6 +23,13 @@ class FormLoginUsernamePassword extends StatelessWidget {
           controller: controllerfirst,
           label: "Username",
           hintText: "Enter the username",
+          validator: (p0) {
+            if (p0!.isEmpty) {
+              return "Invalid value";
+            }
+
+            return null;
+          },
         ),
         ConstrainedBox(
           constraints: const BoxConstraints(

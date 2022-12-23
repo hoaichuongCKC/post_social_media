@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:post_media_social/config/colors.dart';
 
 var swatchCustom = const MaterialColor(
@@ -20,10 +21,10 @@ var swatchCustom = const MaterialColor(
 ThemeData themeApp = ThemeData(
     primaryColor: AppColors.primary,
     appBarTheme: const AppBarTheme(
-      brightness: Brightness.light,
       backgroundColor: AppColors.light,
       elevation: 0.8,
       centerTitle: true,
+      systemOverlayStyle: SystemUiOverlayStyle.dark,
     ),
     primarySwatch: swatchCustom,
     indicatorColor: AppColors.primary,

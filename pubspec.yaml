@@ -41,6 +41,12 @@ dependencies:
 
   #select file
   image_picker: ^0.8.6
+  
+  #object
+  equatable: ^2.0.5
+  http: ^0.13.5
+  firebase_core: ^2.4.0
+  firebase_auth: ^4.2.2
 
 dev_dependencies:
 

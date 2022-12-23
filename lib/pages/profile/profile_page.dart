@@ -121,8 +121,7 @@ class ProfilePage extends StatelessWidget {
           child: const CircleAvatarCst(
             isHasBorder: true,
             isCameraIcon: true,
-            width: 130,
-            height: 130,
+            radius: 130,
             urlAvatar:
                 'https://mondaycareer.com/wp-content/uploads/2020/11/anime-l%C3%A0-g%C3%AC-v%C3%A0-kh%C3%A1i-ni%E1%BB%87m.jpg',
           ),

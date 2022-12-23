@@ -3,15 +3,13 @@ import 'package:post_media_social/config/export.dart';
 class CircleAvatarCst extends StatelessWidget {
   const CircleAvatarCst({
     super.key,
-    this.height = 50,
-    this.width = 50,
+    this.radius = 50,
     this.isCameraIcon = false,
     required this.urlAvatar,
     this.isHasBorder = false,
     this.widthBorder = 5.0,
   });
-  final double height;
-  final double width;
+  final double radius;
   final bool isCameraIcon;
   final String urlAvatar;
   final bool isHasBorder;
@@ -20,8 +18,8 @@ class CircleAvatarCst extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: isHasBorder ? EdgeInsets.all(widthBorder) : null,
-      height: height,
-      width: width,
+      height: radius,
+      width: radius,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: AppColors.primary.withOpacity(0.5),
@@ -72,6 +70,5 @@ class CircleAvatarCst extends StatelessWidget {
         ],
       ),
     );
-    ;
   }
 }
