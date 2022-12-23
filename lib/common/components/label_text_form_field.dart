@@ -9,12 +9,18 @@ class LabelTextFormField extends StatelessWidget {
       required this.controller,
       required this.label,
       required this.hintText,
-      this.validator});
+      this.validator,
+      this.textInputType,
+      this.textInputAction,
+      this.onSubmitted});
   final Size size;
   final TextEditingController controller;
   final String label;
   final String hintText;
   final String? Function(String?)? validator;
+  final TextInputType? textInputType;
+  final TextInputAction? textInputAction;
+  final Function(String)? onSubmitted;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -39,11 +45,14 @@ class LabelTextFormField extends StatelessWidget {
         ),
         TextFormField(
           controller: controller,
+          onFieldSubmitted: onSubmitted,
           validator: validator,
+          keyboardType: textInputType,
+          textInputAction: textInputAction,
           style: const TextStyle(
             fontSize: 14.0,
-            color: AppColors.disable,
-            fontWeight: FontWeight.w400,
+            color: AppColors.dark,
+            fontWeight: FontWeight.w300,
           ),
           decoration: InputDecoration(
             hintText: hintText,

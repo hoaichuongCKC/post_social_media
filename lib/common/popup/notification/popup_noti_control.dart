@@ -1,5 +1,4 @@
 import 'package:post_media_social/config/export.dart';
-import 'package:post_media_social/pages/notification/components/item_noti.dart';
 
 class PopupNotiControl {
   PopupNotiControl._();

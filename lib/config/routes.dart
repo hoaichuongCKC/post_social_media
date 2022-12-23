@@ -11,7 +11,7 @@ import 'package:post_media_social/pages/splash/splash_page.dart';
 import 'package:post_media_social/pages/upload_post/upload_post_page.dart';
 
 class AppRoutes {
-  static const String initRoute = homePath;
+  static const String initRoute = loginPath;
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -22,7 +22,11 @@ class AppRoutes {
       case loginPath:
         return MaterialPageRoute(builder: (_) => const LoginPage());
       case otpPath:
-        return SlideToLeft(child: const OtpPage());
+        return SlideToLeft(
+          child: OtpPage(
+            phone: settings.arguments.toString(),
+          ),
+        );
       case registerPath:
         return SlideToLeft(child: const RegisterPage());
 

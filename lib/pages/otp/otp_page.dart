@@ -1,29 +1,38 @@
 import 'dart:async';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:post_media_social/common/widgets/arrow_back.dart';
 import 'package:post_media_social/config/export.dart';
+import 'package:post_media_social/config/scaffold_message.dart';
+import 'package:post_media_social/pages/otp/components/header_otp.dart';
 
 class OtpPage extends StatefulWidget {
-  const OtpPage({super.key});
-
+  const OtpPage({super.key, required this.phone});
+  final String phone;
   @override
   State<OtpPage> createState() => _OtpPageState();
 }
 
 class _OtpPageState extends State<OtpPage> {
-  TextEditingController textEditingController = TextEditingController();
-  // ..text = "123456";
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-  // ignore: close_sinks
+  TextEditingController textEditingController = TextEditingController();
+
   StreamController<ErrorAnimationType>? errorController;
 
   bool hasError = false;
   final formKey = GlobalKey<FormState>();
 
+  String get phone => widget.phone;
+
+  String _verificationId = '';
+  int _resendToken = 0;
+  bool _isLoading = false;
   @override
   void initState() {
     errorController = StreamController<ErrorAnimationType>();
+    verifiedPhone();
     super.initState();
   }
 
@@ -33,6 +42,61 @@ class _OtpPageState extends State<OtpPage> {
     textEditingController.dispose();
   }
 
+  void verifiedPhone() async {
+    await auth
+        .verifyPhoneNumber(
+          phoneNumber: '+84 $phone',
+          verificationCompleted: (PhoneAuthCredential credential) async {
+            await auth.signInWithCredential(credential).then((value) {});
+          },
+          verificationFailed: (FirebaseAuthException exception) {
+            if (exception.code == "invalid-phone-number") {
+              AppSnackbar.showMessage("Error: invalid phone number");
+            }
+
+            if (exception.code == "too-many-requests") {
+              AppSnackbar.showMessage(
+                  "You have requested phone number verification too many times");
+            }
+          },
+          codeSent: (String verificationId, int? resendToken) {
+            _verificationId = verificationId;
+            _resendToken = resendToken!;
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {
+            print("codeAutoRetrievalTimeout ahahah");
+            _verificationId = verificationId;
+          },
+          forceResendingToken: _resendToken,
+        )
+        .whenComplete(() {});
+    setState(() {});
+  }
+
+  void verifyOtp(String code) async {
+    _isLoading = true;
+    setState(() {});
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: _verificationId,
+        smsCode: code,
+      );
+      await auth.signInWithCredential(credential).then(
+        (user) {
+          if (user.user != null) {
+            AppRoutes.pushNameAndRemoveUntil(homePath);
+          }
+        },
+      ).onError((error, stackTrace) {
+        _isLoading = false;
+        setState(() {});
+        AppSnackbar.showMessage(error.toString());
+      });
+    } catch (e) {
+      print("exception verify otp $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -40,176 +104,103 @@ class _OtpPageState extends State<OtpPage> {
       child: Scaffold(
         backgroundColor: AppColors.light,
         body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const ArrowBackWidget(),
-                HeaderOtp(size: size),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Form(
-                      key: formKey,
-                      child: PinCodeTextField(
-                        scrollPadding: const EdgeInsets.all(0.0),
-                        appContext: context,
-                        backgroundColor: AppColors.light,
-                        pastedTextStyle: TextStyle(
-                          color: Colors.green.shade600,
-                          fontWeight: FontWeight.bold,
+                    const ArrowBackWidget(),
+                    HeaderOtp(size: size),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Form(
+                          key: formKey,
+                          child: PinCodeTextField(
+                            autoDisposeControllers: false,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.allow(
+                                  RegExp("[0-9]")),
+                            ],
+                            scrollPadding: const EdgeInsets.all(0.0),
+                            appContext: context,
+                            backgroundColor: AppColors.light,
+                            pastedTextStyle: TextStyle(
+                              color: Colors.green.shade600,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            length: 6,
+                            textStyle: const TextStyle(
+                              fontSize: 14.0,
+                              color: AppColors.dark,
+                              fontWeight: FontWeight.w300,
+                            ),
+                            cursorWidth: 1.0,
+                            cursorHeight: 6.0,
+                            blinkWhenObscuring: true,
+                            animationType: AnimationType.fade,
+                            pinTheme: PinTheme(
+                              shape: PinCodeFieldShape.box,
+                              borderRadius: BorderRadius.circular(5),
+                              fieldHeight: 30,
+                              fieldWidth: 30,
+                              activeColor: AppColors.primary,
+                              activeFillColor: Colors.white,
+                              selectedFillColor: AppColors.light,
+                              selectedColor: AppColors.primary,
+                              inactiveColor: AppColors.primary,
+                              inactiveFillColor: AppColors.light,
+                              borderWidth: 1.0,
+                              fieldOuterPadding:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
+                            ),
+                            cursorColor: AppColors.disable,
+                            animationDuration:
+                                const Duration(milliseconds: 300),
+                            enableActiveFill: true,
+                            errorAnimationController: errorController,
+                            controller: textEditingController,
+                            onSubmitted: (value) {
+                              verifyOtp(value);
+                            },
+                            keyboardType: TextInputType.number,
+                            boxShadows: const [
+                              BoxShadow(
+                                offset: Offset(0, 1),
+                                color: Colors.black12,
+                                blurRadius: 10,
+                              )
+                            ],
+                            onCompleted: (v) {
+                              verifyOtp(v);
+                            },
+                            onChanged: (value) {},
+                            beforeTextPaste: (text) {
+                              return true;
+                            },
+                          ),
                         ),
-                        length: 6,
-                        textStyle: const TextStyle(
-                          fontSize: 14.0,
-                          color: AppColors.dark,
-                          fontWeight: FontWeight.w300,
-                        ),
-                        cursorWidth: 1.0,
-                        cursorHeight: 6.0,
-                        blinkWhenObscuring: true,
-                        animationType: AnimationType.fade,
-                        validator: (v) {
-                          if (v!.length < 3) {
-                            return "I'm from validator";
-                          } else {
-                            return null;
-                          }
-                        },
-                        pinTheme: PinTheme(
-                          shape: PinCodeFieldShape.box,
-                          borderRadius: BorderRadius.circular(5),
-                          fieldHeight: 30,
-                          fieldWidth: 30,
-                          activeColor: AppColors.primary,
-                          activeFillColor: Colors.white,
-                          selectedFillColor: AppColors.light,
-                          selectedColor: AppColors.primary,
-                          inactiveColor: AppColors.primary,
-                          inactiveFillColor: AppColors.light,
-                          borderWidth: 1.0,
-                          fieldOuterPadding:
-                              const EdgeInsets.symmetric(vertical: 10.0),
-                        ),
-                        cursorColor: AppColors.disable,
-                        animationDuration: const Duration(milliseconds: 300),
-                        enableActiveFill: true,
-                        errorAnimationController: errorController,
-                        controller: textEditingController,
-                        keyboardType: TextInputType.number,
-                        // boxShadows: const [
-                        //   BoxShadow(
-                        //     offset: Offset(0, 1),
-                        //     color: Colors.black12,
-                        //     blurRadius: 10,
-                        //   )
-                        // ],
-                        onCompleted: (v) {
-                          debugPrint("Completed");
-                        },
-                        // onTap: () {
-                        //   print("Pressed");
-                        // },
-                        onChanged: (value) {},
-                        beforeTextPaste: (text) {
-                          debugPrint("Allowing to paste $text");
-                          //if you return true then it will show the paste confirmation dialog. Otherwise if false, then nothing will happen.
-                          //but you can show anything you want here, like your pop up saying wrong paste format or etc
-                          return true;
-                        },
-                      ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HeaderOtp extends StatelessWidget {
-  const HeaderOtp({
-    super.key,
-    required this.size,
-  });
-
-  final Size size;
-
-  @override
-  Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(
-        maxHeight: 250,
-        minHeight: 200.0,
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: size.height * 0.4,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.4,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Flexible(
-                      child: FittedBox(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Verified",
-                          style: GoogleFonts.robotoMono(
-                            fontSize: 20.0,
-                            color: AppColors.dark,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      child: FittedBox(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "OTP code",
-                          style: GoogleFonts.robotoMono(
-                            fontSize: 20.0,
-                            color: AppColors.dark,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      child: FittedBox(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "please",
-                          style: GoogleFonts.robotoMono(
-                            fontSize: 20.0,
-                            color: AppColors.dark,
-                            fontWeight: FontWeight.w500,
-                          ),
+              ),
+              _isLoading
+                  ? ColoredBox(
+                      color: AppColors.dark.withOpacity(0.4),
+                      child: SizedBox(
+                        width: size.width,
+                        height: size.height,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
                         ),
                       ),
                     )
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(width: size.width * 0.03),
-            Expanded(
-              flex: 2,
-              child: SvgPicture.asset(
-                "assets/images/img-otp.svg",
-                fit: BoxFit.contain,
-              ),
-            )
-          ],
+                  : const SizedBox(),
+            ],
+          ),
         ),
       ),
     );
