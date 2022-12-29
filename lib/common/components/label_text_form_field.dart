@@ -56,6 +56,12 @@ class LabelTextFormField extends StatelessWidget {
           ),
           decoration: InputDecoration(
             hintText: hintText,
+            errorBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red,
+                width: 0.5,
+              ),
+            ),
           ),
         ),
       ],

@@ -11,7 +11,7 @@ import 'package:post_media_social/pages/splash/splash_page.dart';
 import 'package:post_media_social/pages/upload_post/upload_post_page.dart';
 
 class AppRoutes {
-  static const String initRoute = loginPath;
+  static const String initRoute = splashPath;
 
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -62,12 +62,15 @@ class AppRoutes {
   static void pushNamed(String route, {Object? argument}) =>
       navigatorKey.currentState!.pushNamed(route, arguments: argument);
 
+  static void pushReplacementNamed(String route, {Object? argument}) =>
+      navigatorKey.currentState!
+          .pushReplacementNamed(route, arguments: argument);
+
   static void pop() => navigatorKey.currentState!.pop();
 
-  static void pushNameAndRemoveUntil(String route, {bool isRoute = false}) {
-    navigatorKey.currentState!
-        .pushNamedAndRemoveUntil(route, (route) => isRoute);
-  }
+  static void pushNameAndRemoveUntil(String route, {bool isRoute = false}) =>
+      navigatorKey.currentState!
+          .pushNamedAndRemoveUntil(route, (Route<dynamic> route) => isRoute);
 
   static void popAndPushNamed(String route) =>
       navigatorKey.currentState!.popAndPushNamed(route);

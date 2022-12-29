@@ -12,6 +12,7 @@ class PopupControl {
   }) async {
     final size = MediaQuery.of(context).size;
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return ShowAuthSuccess(size: size);
@@ -21,12 +22,14 @@ class PopupControl {
 
   void showAuthError({
     required BuildContext context,
+    required String error,
   }) async {
     final size = MediaQuery.of(context).size;
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
-        return ShowAuthError(size: size);
+        return ShowAuthError(size: size, error: error);
       },
     );
   }

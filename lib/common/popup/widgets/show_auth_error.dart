@@ -1,15 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:post_media_social/config/colors.dart';
+import 'package:post_media_social/config/export.dart';
 
 class ShowAuthError extends StatelessWidget {
   const ShowAuthError({
     super.key,
     required this.size,
+    required this.error,
   });
 
   final Size size;
-
+  final String error;
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -46,7 +45,7 @@ class ShowAuthError extends StatelessWidget {
                     const Expanded(
                       child: FittedBox(
                         child: Text(
-                          "UnAuthenticated",
+                          "Error",
                           style: TextStyle(
                             color: AppColors.error,
                             fontSize: 16.0,
@@ -57,28 +56,30 @@ class ShowAuthError extends StatelessWidget {
                     ),
                     const SizedBox(height: 15.0),
                     Expanded(
-                      flex: 4,
+                      flex: 3,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: const [
-                          Text(
-                            "An exception has occurred. Please ",
-                            style: TextStyle(
-                              color: AppColors.dark,
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w300,
+                        children: [
+                          Flexible(
+                            child: FractionallySizedBox(
+                              heightFactor: 0.9,
+                              child: Text(
+                                error,
+                                style: const TextStyle(
+                                  color: AppColors.dark,
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 4,
+                              ),
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                          Text(
-                            "try again",
-                            style: TextStyle(
-                              color: AppColors.dark,
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w300,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
+                          ButtonCustom(
+                              text: "Ok",
+                              onPressed: () => AppRoutes.pop(),
+                              width: size.width * 0.6),
                         ],
                       ),
                     ),

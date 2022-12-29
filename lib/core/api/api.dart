@@ -1,5 +1,11 @@
 // ignore_for_file: non_constant_identifier_names
 
-abstract class ConfigApi {
-  static String BASE_URL = "https://e559-42-115-34-162.ap.ngrok.io/api/v2.0";
+class Api {
+  final String BASE_URL =
+      "https://1588-2405-4802-a216-e970-19ed-cb1c-f093-d706.ap.ngrok.io";
+
+  final String loginUrl = "/api/auth/login";
+  final String meUrl = "/api/auth/me";
+  final String logoutUrl = "/api/auth/logout";
+  final String registerUrl = "/api/auth/register";
 }

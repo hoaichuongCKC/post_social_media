@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:post_media_social/config/colors.dart';
+import '../../../config/export.dart';
 
 class ShowAuthSuccess extends StatelessWidget {
   const ShowAuthSuccess({
@@ -24,7 +22,7 @@ class ShowAuthSuccess extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(16.0)),
           ),
           width: size.width * .75,
-          height: size.height * .6,
+          height: size.height * .5,
           // constraints: const BoxConstraints(
           //   maxHeight: 300.0,
           //   minHeight: 200.0,
@@ -58,11 +56,11 @@ class ShowAuthSuccess extends StatelessWidget {
                     ),
                     const SizedBox(height: 15.0),
                     Expanded(
-                      flex: 4,
+                      flex: 3,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: const [
-                          Text(
+                        children: [
+                          const Text(
                             "Your account is ready to use. You",
                             style: TextStyle(
                               color: AppColors.dark,
@@ -71,7 +69,7 @@ class ShowAuthSuccess extends StatelessWidget {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          Text(
+                          const Text(
                             "will be redirected to the Home",
                             style: TextStyle(
                               color: AppColors.dark,
@@ -80,7 +78,7 @@ class ShowAuthSuccess extends StatelessWidget {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          Text(
+                          const Text(
                             "Page in a few seconds.",
                             style: TextStyle(
                               color: AppColors.dark,
@@ -89,6 +87,8 @@ class ShowAuthSuccess extends StatelessWidget {
                             ),
                             textAlign: TextAlign.center,
                           ),
+                          const SizedBox(height: 7.0),
+                          spinkit,
                         ],
                       ),
                     ),

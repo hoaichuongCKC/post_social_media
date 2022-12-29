@@ -50,7 +50,7 @@ ThemeData themeApp = ThemeData(
       errorBorder: UnderlineInputBorder(
         borderSide: BorderSide(
           color: Colors.red,
-          width: 0.8,
+          width: 0.5,
         ),
       ),
     ));

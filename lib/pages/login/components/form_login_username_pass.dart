@@ -23,6 +23,8 @@ class FormLoginUsernamePassword extends StatelessWidget {
           controller: controllerfirst,
           label: "Username",
           hintText: "Enter the username",
+          textInputAction: TextInputAction.next,
+          textInputType: TextInputType.text,
           validator: (p0) {
             if (p0!.isEmpty) {
               return "Invalid value";
@@ -58,6 +60,8 @@ class FormLoginUsernamePassword extends StatelessWidget {
           return TextFormField(
             obscureText: isShowPassword,
             controller: controllersecond,
+            textInputAction: TextInputAction.done,
+            keyboardType: TextInputType.visiblePassword,
             validator: (value) {
               if (value!.isEmpty) {
                 return "Invalid password.";
@@ -66,7 +70,7 @@ class FormLoginUsernamePassword extends StatelessWidget {
             },
             style: const TextStyle(
               fontSize: 14.0,
-              color: AppColors.disable,
+              color: AppColors.dark,
             ),
             decoration: InputDecoration(
               errorStyle: const TextStyle(

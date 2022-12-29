@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:post_media_social/common/widgets/arrow_back.dart';
 import 'package:post_media_social/config/export.dart';
 import 'package:post_media_social/config/scaffold_message.dart';
 import 'package:post_media_social/pages/otp/components/header_otp.dart';
@@ -64,7 +63,7 @@ class _OtpPageState extends State<OtpPage> {
             _resendToken = resendToken!;
           },
           codeAutoRetrievalTimeout: (String verificationId) {
-            print("codeAutoRetrievalTimeout ahahah");
+            debugPrint("codeAutoRetrievalTimeout ahahah");
             _verificationId = verificationId;
           },
           forceResendingToken: _resendToken,
@@ -93,7 +92,7 @@ class _OtpPageState extends State<OtpPage> {
         AppSnackbar.showMessage(error.toString());
       });
     } catch (e) {
-      print("exception verify otp $e");
+      debugPrint("exception verify otp $e");
     }
   }
 

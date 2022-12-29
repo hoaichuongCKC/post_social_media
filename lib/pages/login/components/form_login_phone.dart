@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:post_media_social/common/components/label_text_form_field.dart';
 import 'package:post_media_social/config/export.dart';
 
 class FormLoginPhone extends StatelessWidget {

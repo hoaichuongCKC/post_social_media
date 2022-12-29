@@ -46,22 +46,25 @@ class CircleAvatarCst extends StatelessWidget {
                   child: FractionallySizedBox(
                     widthFactor: 0.35,
                     heightFactor: 0.35,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: AppColors.light,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withOpacity(0.4),
-                            blurRadius: 10,
-                          )
-                        ],
-                      ),
-                      child: const Align(
-                        alignment: Alignment.center,
-                        child: Icon(
-                          Icons.camera_alt,
-                          size: 20.0,
+                    child: InkWell(
+                      onTap: () {},
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: AppColors.light,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withOpacity(0.4),
+                              blurRadius: 10,
+                            )
+                          ],
+                        ),
+                        child: const Align(
+                          alignment: Alignment.center,
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 20.0,
+                          ),
                         ),
                       ),
                     ),

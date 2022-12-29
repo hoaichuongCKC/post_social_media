@@ -1,26 +1,51 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:post_media_social/config/colors.dart';
-import 'package:post_media_social/config/constants.dart';
-import 'package:post_media_social/config/routes.dart';
-import 'package:post_media_social/config/style_text.dart';
+import 'package:post_media_social/bloc/user/user_bloc.dart';
 
-class SplashPage extends StatefulWidget {
+import '../../config/export.dart';
+
+class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return BlocProvider(
+      create: (context) => sl<UserBloc>(),
+      child: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: SizedBox(
+              height: double.infinity,
+              width: size.width,
+              child: const BodySplash(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _SplashPageState extends State<SplashPage> {
+class BodySplash extends StatefulWidget {
+  const BodySplash({
+    super.key,
+  });
+
+  @override
+  State<BodySplash> createState() => _BodySplashState();
+}
+
+class _BodySplashState extends State<BodySplash> {
+  late UserBloc bloc;
   @override
   void initState() {
-    Timer.periodic(const Duration(seconds: 2), (timer) {
-      if (timer.tick == 2) {
-        AppRoutes.popAndPushNamed(loginPath);
+    bloc = BlocProvider.of<UserBloc>(context);
+
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (timer.tick == 1) {
+        bloc.add(CheckData());
         timer.cancel();
       }
     });
@@ -29,55 +54,34 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final spinkit = SpinKitFadingCircle(
-      itemBuilder: (BuildContext context, int index) {
-        return const DecoratedBox(
-          decoration: BoxDecoration(
-            color: AppColors.primary,
-          ),
-        );
-      },
-    );
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SizedBox(
-            height: double.infinity,
-            width: size.width,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Spacer(flex: 2),
-                Flexible(
-                  flex: 1,
-                  fit: FlexFit.tight,
-                  child: SvgPicture.asset("assets/icons/logo.svg"),
-                ),
-                Flexible(
-                  flex: 1,
-                  fit: FlexFit.tight,
-                  child: FractionallySizedBox(
-                    heightFactor: 0.25,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Text(
-                        "Mr.Chương Social",
-                        style: AppStyleText.heading1StyleColor,
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: spinkit,
-                )
-              ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Spacer(flex: 2),
+        Flexible(
+          flex: 1,
+          fit: FlexFit.tight,
+          child: SvgPicture.asset("assets/icons/logo.svg"),
+        ),
+        Flexible(
+          flex: 1,
+          fit: FlexFit.tight,
+          child: FractionallySizedBox(
+            heightFactor: 0.25,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: Text(
+                "Mr.Chương Social",
+                style: AppStyleText.heading1StyleColor,
+              ),
             ),
           ),
         ),
-      ),
+        Expanded(
+          flex: 2,
+          child: spinkit,
+        )
+      ],
     );
   }
 }
