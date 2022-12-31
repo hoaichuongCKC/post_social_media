@@ -12,10 +12,24 @@ class UserInitialState extends UserState {}
 
 class UserLoadingState extends UserState {}
 
-class UserAuthenticated extends UserState {
-  const UserAuthenticated();
+//-----------[ Define: state change image event ]---------------------
+
+class UploadingState extends UserState {}
+
+class UploadSuccessfulState extends UserState {}
+
+class UploadErrorState extends UserState {
+  final String message;
+
+  const UploadErrorState({
+    required this.message,
+  });
+
+  @override
+  List<Object> get props => [message];
 }
 
+//---------------------------------------------------------------------
 class UserErrorState extends UserState {
   final String message;
 
@@ -26,5 +40,3 @@ class UserErrorState extends UserState {
   @override
   List<Object> get props => [message];
 }
-
-class UserUnauthorizedState extends UserState {}

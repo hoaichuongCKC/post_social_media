@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'user.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class UserModel extends Equatable {
   final int id;
   final String username;

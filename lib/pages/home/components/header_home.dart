@@ -1,4 +1,9 @@
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:post_media_social/common/widgets/circle_avatar.dart';
 import 'package:post_media_social/config/export.dart';
+import 'package:post_media_social/core/hive/user_hive.dart';
+
+import '../../../core/api/api.dart';
 
 class HeaderHome extends StatelessWidget {
   const HeaderHome({
@@ -21,15 +26,22 @@ class HeaderHome extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Hello Jotaro',
-                    style: GoogleFonts.robotoMono(
-                      fontSize: 22.0,
-                      color: AppColors.dark,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
+                  ValueListenableBuilder<Box<UserHive>>(
+                    valueListenable:
+                        Hive.box<UserHive>(BoxUser.nameBox).listenable(),
+                    builder: (context, box, child) {
+                      final data = box.values.first;
+                      return Text(
+                        'Hi ${data.displayName}',
+                        style: GoogleFonts.robotoMono(
+                          fontSize: 22.0,
+                          color: AppColors.dark,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      );
+                    },
                   ),
                   const SizedBox(height: 8.0),
                   Text(
@@ -44,13 +56,17 @@ class HeaderHome extends StatelessWidget {
               ),
             ),
           ),
-          CircleAvatar(
-            // backgroundColor: AppColors.light,
-            backgroundImage: const CachedNetworkImageProvider(
-              "https://staticg.sportskeeda.com/editor/2022/06/508cd-16557590423635-1920.jpg",
-            ),
-            radius: size.width * 0.12,
-          )
+          ValueListenableBuilder<Box<UserHive>>(
+            valueListenable: Hive.box<UserHive>(BoxUser.nameBox).listenable(),
+            builder: (context, box, child) {
+              final data = box.values.first;
+              return CircleAvatarCst(
+                radius: 90,
+                // backgroundColor: AppColors.light,
+                urlAvatar: sl.get<Api>().BASE_URL + data.avatar,
+              );
+            },
+          ),
         ],
       ),
     );

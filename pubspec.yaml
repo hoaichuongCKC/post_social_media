@@ -66,6 +66,9 @@ dependencies:
   hive: ^2.2.3
 
   hive_flutter:
+
+  #compress image file
+  flutter_image_compress: ^1.1.3
   
 
 dev_dependencies:

@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_null_comparison
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:post_media_social/config/colors.dart';
+import 'package:post_media_social/bloc/home/home_bloc.dart';
+import 'package:post_media_social/config/export.dart';
 import 'package:post_media_social/pages/home/components/bottom_nav_home.dart';
 import 'package:post_media_social/pages/home/components/header_home.dart';
 import 'package:post_media_social/pages/home/components/list_post.dart';
@@ -28,25 +28,28 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
-    return Scaffold(
-      bottomNavigationBar: BottomNavHome(
-        onTap: (int index) {
-          indexChanged.value = index;
-        },
-      ),
-      backgroundColor: AppColors.light,
-      body: SafeArea(
-        child: ValueListenableBuilder(
-          valueListenable: indexChanged,
-          builder: (context, int currentIndex, child) {
-            return IndexedStack(
-              index: currentIndex,
-              children: [
-                BodyHome(size: size),
-                const ProfilePage(),
-              ],
-            );
+    return BlocProvider(
+      create: (context) => sl<HomeBloc>(),
+      child: Scaffold(
+        bottomNavigationBar: BottomNavHome(
+          onTap: (int index) {
+            indexChanged.value = index;
           },
+        ),
+        backgroundColor: AppColors.light,
+        body: SafeArea(
+          child: ValueListenableBuilder(
+            valueListenable: indexChanged,
+            builder: (context, int currentIndex, child) {
+              return IndexedStack(
+                index: currentIndex,
+                children: [
+                  BodyHome(size: size),
+                  const ProfilePage(),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -66,16 +69,57 @@ class BodyHome extends StatefulWidget {
 }
 
 class _BodyHomeState extends State<BodyHome> {
+  int _page = 0;
+
+  final int _limit = 2;
+
   late ScrollController _scrollController;
+
+  late HomeBloc _homeBloc;
+
+  bool _isHasData = true;
+
+  final ValueNotifier<bool> _isLoading = ValueNotifier<bool>(false);
+
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController()..addListener(() {});
+
+    _homeBloc = BlocProvider.of<HomeBloc>(context);
+
+    _homeBloc.add(LoadPostEvent(limit: _limit, page: _page));
+
+    _homeBloc.stream.listen((state) {
+      if (state is HomeSuccessfulState) {
+        // if (state.stateLoad is SuccessfulMoreData ||
+        //     state.stateLoad is LoadDataEmtpy) {
+        //   _isLoading.value = false;
+        // }
+        if (state.stateLoad is LoadDataEmtpy) {
+          //chặn add eventn load more
+          _isHasData = false;
+        }
+      }
+    });
+
+    _scrollController = ScrollController()
+      ..addListener(() {
+        if (_scrollController.offset ==
+            _scrollController.position.maxScrollExtent) {
+          if (_isHasData) {
+            ++_page;
+            _homeBloc.add(LoadMorePostEvent(limit: _limit, page: _page));
+            _isLoading.value = true;
+          }
+        }
+      });
   }
 
   @override
   void dispose() {
     super.dispose();
+    _homeBloc.close();
+    _isLoading.dispose();
     _scrollController.dispose();
   }
 
@@ -90,39 +134,82 @@ class _BodyHomeState extends State<BodyHome> {
         }
         return true;
       },
-      child: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxHeight: 220,
-                  minHeight: 180,
-                ),
-                child: SizedBox(
-                  height: widget.size.height * 0.2,
-                  width: double.infinity,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      HeaderHome(size: widget.size),
-                      const TabHome(),
-                      const Divider(),
-                    ],
+      child: BlocBuilder<HomeBloc, HomeState>(
+        buildWhen: (previous, current) {
+          if (current is HomeSuccessfulState) {
+            return current.hasFirstPost == true;
+          }
+          return previous != current;
+        },
+        builder: (context, state) {
+          if (state is HomeLoadingState) {
+            return Center(
+              child: spinkit,
+            );
+          }
+          if (state is HomeErrorState) {
+            return Center(
+              child: Text(state.message),
+            );
+          }
+
+          if (state is HomeSuccessfulState) {
+            return RefreshIndicator(
+              edgeOffset: 0,
+              strokeWidth: 1.5,
+              onRefresh: () async {
+                _page = 0;
+                _isHasData = true;
+                _homeBloc.add(OnRefreshDataEvent(page: _page, limit: _limit));
+              },
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxHeight: 220,
+                          minHeight: 180,
+                        ),
+                        child: SizedBox(
+                          height: widget.size.height * 0.2,
+                          width: double.infinity,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              HeaderHome(size: widget.size),
+                              const TabHome(),
+                              const Divider(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  const ListPostHome(),
+                  SliverToBoxAdapter(
+                    child: ValueListenableBuilder<bool>(
+                        valueListenable: _isLoading,
+                        builder: (context, bool currentLoading, child) {
+                          if (currentLoading) {
+                            return Center(
+                              child: spinkit,
+                            );
+                          }
+                          return const SizedBox(
+                            height: 20.0,
+                            child: null,
+                          );
+                        }),
+                  )
+                ],
               ),
-            ),
-          ),
-          const ListPostHome(),
-          const SliverToBoxAdapter(
-            child: SizedBox(
-              height: 30.0,
-            ),
-          )
-        ],
+            );
+          }
+          return const SizedBox();
+        },
       ),
     );
   }

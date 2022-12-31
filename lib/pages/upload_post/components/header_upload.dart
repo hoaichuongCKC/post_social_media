@@ -1,4 +1,7 @@
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:post_media_social/common/widgets/circle_avatar.dart';
+import 'package:post_media_social/core/api/api.dart';
+import 'package:post_media_social/core/hive/user_hive.dart';
 
 import '../../../config/export.dart';
 
@@ -16,28 +19,32 @@ class HeaderUploadPost extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         height: size.height * .1,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const CircleAvatarCst(
-              radius: 60,
-              urlAvatar:
-                  "https://mondaycareer.com/wp-content/uploads/2020/11/anime-l%C3%A0-g%C3%AC-v%C3%A0-kh%C3%A1i-ni%E1%BB%87m.jpg",
-            ),
-            const SizedBox(width: 10.0),
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                'TùngLakachim',
-                style: GoogleFonts.robotoMono(
-                  fontSize: 18.0,
-                  color: AppColors.dark,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            )
-          ],
-        ),
+        child: ValueListenableBuilder<Box<UserHive>>(
+            valueListenable: Hive.box<UserHive>(BoxUser.nameBox).listenable(),
+            builder: (context, box, child) {
+              final boxUser = box.values.first;
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CircleAvatarCst(
+                    radius: 60,
+                    urlAvatar: sl.get<Api>().BASE_URL + boxUser.avatar,
+                  ),
+                  const SizedBox(width: 10.0),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      boxUser.displayName,
+                      style: GoogleFonts.robotoMono(
+                        fontSize: 18.0,
+                        color: AppColors.dark,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  )
+                ],
+              );
+            }),
       ),
     );
   }

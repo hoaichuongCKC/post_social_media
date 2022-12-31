@@ -28,8 +28,8 @@ class BottomNavHome extends StatelessWidget {
       ),
       child: ConstrainedBox(
         constraints: const BoxConstraints(
-          maxHeight: 70,
-          minHeight: 50,
+          maxHeight: 60,
+          minHeight: 40,
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),

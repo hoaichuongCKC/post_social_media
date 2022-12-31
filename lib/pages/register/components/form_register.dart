@@ -51,22 +51,7 @@ class _FormRegisterState extends State<FormRegister> {
     return BlocListener<RegisterBloc, RegisterState>(
       listener: (context, state) async {
         if (state is RegisterLoadingState) {
-          showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) => AlertDialog(
-              content: SizedBox(
-                width: size.width * 0.5,
-                height: 50,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Center(child: spinkit),
-                  ],
-                ),
-              ),
-            ),
-          );
+          PopupControl.instance.showLoading(context, size);
         }
         if (state is RegisterErrorState) {
           AppRoutes.pop();
@@ -227,36 +212,35 @@ class _FormRegisterState extends State<FormRegister> {
                     ),
                   ),
                 ),
-                InkWell(
-                  onTap: () async {
-                    final result = await CameraSeviceApp().pickImage();
+                StatefulBuilder(builder: (context, setStateChild) {
+                  return InkWell(
+                    onTap: () async {
+                      _image = await sl.get<CameraServiceApp>().pickImage();
 
-                    if (result != null) {
-                      _image = result;
-                      setState(() {});
-                    }
-                  },
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxHeight: 150.0,
-                      minHeight: 80.0,
-                    ),
-                    child: SizedBox(
-                      height: size.height * 0.3,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: _image == null
-                            ? SvgPicture.asset(
-                                "assets/images/img-select-file.svg",
-                              )
-                            : CircleAvatar(
-                                radius: 60,
-                                backgroundImage: FileImage(_image!),
-                              ),
+                      setStateChild(() {});
+                    },
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxHeight: 150.0,
+                        minHeight: 80.0,
+                      ),
+                      child: SizedBox(
+                        height: size.height * 0.3,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: _image == null
+                              ? SvgPicture.asset(
+                                  "assets/images/img-select-file.svg",
+                                )
+                              : CircleAvatar(
+                                  radius: 60,
+                                  backgroundImage: FileImage(_image!),
+                                ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                }),
               ],
             ),
           ),

@@ -1,19 +1,17 @@
-import 'package:post_media_social/common/components/expandable_text.dart';
 import 'package:post_media_social/common/components/info_user_post.dart';
-
+import 'package:post_media_social/core/api/api.dart';
+import 'package:post_media_social/models/image_post.dart';
+import 'package:post_media_social/models/post.dart';
 import '../../config/export.dart';
 
 class ItemPost extends StatelessWidget {
-  const ItemPost(
-      {super.key,
-      required this.urlPost,
-      required this.urlAvatarUser,
-      required this.title,
-      required this.username});
-  final String urlPost;
-  final String urlAvatarUser;
-  final String title;
-  final String username;
+  const ItemPost({
+    super.key,
+    required this.lastItem,
+    required this.postModel,
+  });
+  final bool lastItem;
+  final PostModel postModel;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -25,25 +23,26 @@ class ItemPost extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: InfoUserPost(
-              height: size.height * .1,
-              urlAvatar: urlAvatarUser,
-              username: username,
-            ),
+                height: size.height * .1,
+                user: postModel.user,
+                hasMyPost: postModel.hasMyPost),
           ),
           BodyPost(
-            title: title,
-            urlPost: urlPost,
+            title: postModel.content,
+            imagePost: postModel.image,
           ),
-          BottomPost(size: size),
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              color: AppColors.disable,
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              height: 20.0,
-            ),
-          )
+          BottomPost(size: size, postModel: postModel),
+          lastItem
+              ? const SizedBox()
+              : const DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: AppColors.disable,
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 20.0,
+                  ),
+                )
         ],
       ),
     );
@@ -54,10 +53,10 @@ class BodyPost extends StatelessWidget {
   const BodyPost({
     super.key,
     required this.title,
-    required this.urlPost,
+    required this.imagePost,
   });
   final String title;
-  final String urlPost;
+  final List<ImagePostModel> imagePost;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -66,9 +65,12 @@ class BodyPost extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-          child: ExpandableText(
+          child: Text(
             title,
-            trimLines: 2,
+            style: GoogleFonts.robotoMono(
+              fontSize: 14.0,
+              color: AppColors.dark,
+            ),
           ),
         ),
         ConstrainedBox(
@@ -79,12 +81,9 @@ class BodyPost extends StatelessWidget {
           child: SizedBox(
             width: double.infinity,
             height: size.height * .3,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(7.0)),
-              child: CachedNetworkImage(
-                imageUrl: urlPost,
-                fit: BoxFit.cover,
-              ),
+            child: CachedNetworkImage(
+              imageUrl: sl.get<Api>().BASE_URL + imagePost[0].link,
+              fit: BoxFit.cover,
             ),
           ),
         ),
@@ -97,10 +96,11 @@ class BottomPost extends StatelessWidget {
   const BottomPost({
     super.key,
     required this.size,
+    required this.postModel,
   });
 
   final Size size;
-
+  final PostModel postModel;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -123,12 +123,12 @@ class BottomPost extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: const [
+                      children: [
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            '18 likes',
-                            style: TextStyle(
+                            '${postModel.likeNumber} likes',
+                            style: GoogleFonts.robotoMono(
                               fontSize: 12.0,
                               color: AppColors.disable,
                               fontWeight: FontWeight.w300,
@@ -138,8 +138,8 @@ class BottomPost extends StatelessWidget {
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            '3 comments',
-                            style: TextStyle(
+                            '${postModel.cmtNumber} comments',
+                            style: GoogleFonts.robotoMono(
                               fontSize: 12.0,
                               color: AppColors.disable,
                               fontWeight: FontWeight.w300,
@@ -225,35 +225,6 @@ class BottomPost extends StatelessWidget {
               ),
             ),
           ),
-          const Text(
-            'Comment list post',
-            style: TextStyle(
-              fontSize: 16.0,
-              color: AppColors.dark,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                InfoUserPost(
-                  height: size.height * .07,
-                  maxHeight: 30,
-                  minHeight: 20,
-                  isComment: true,
-                  urlAvatar:
-                      'https://upload.wikimedia.org/wikipedia/commons/9/90/Di%E1%BB%87u_Nhi_GQT6.jpg',
-                  username: 'Diệu nhi',
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                  child: ExpandableText('😄 😄 😄 😄 😄'),
-                ),
-              ],
-            ),
-          )
         ],
       ),
     );

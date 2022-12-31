@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:post_media_social/bloc/register/register_bloc.dart';
 
 import 'package:post_media_social/pages/register/components/header_register.dart';

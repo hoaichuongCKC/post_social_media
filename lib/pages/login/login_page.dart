@@ -79,22 +79,7 @@ class _BodyLoginState extends State<BodyLogin> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) async {
         if (state is AuthLoadingState) {
-          showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) => AlertDialog(
-              content: SizedBox(
-                width: size.width * 0.5,
-                height: 50,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Center(child: spinkit),
-                  ],
-                ),
-              ),
-            ),
-          );
+          PopupControl.instance.showLoading(context, size);
         }
         if (state is AuthErrorState) {
           AppRoutes.pop();

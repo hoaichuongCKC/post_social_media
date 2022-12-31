@@ -4,7 +4,9 @@ import 'package:post_media_social/bloc/user/user_bloc.dart';
 import 'package:post_media_social/common/widgets/circle_avatar.dart';
 import 'package:post_media_social/config/export.dart';
 import 'package:post_media_social/core/api/api.dart';
+import 'package:post_media_social/core/camera/camera_app.dart';
 import 'package:post_media_social/core/hive/user_hive.dart';
+import 'package:post_media_social/core/image/image_app.dart';
 import 'package:post_media_social/models/user.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -42,6 +44,21 @@ class BodyProfile extends StatefulWidget {
 
 class _BodyProfileState extends State<BodyProfile> {
   UserModel get getData => widget.data;
+
+  late UserBloc bloc;
+
+  @override
+  void initState() {
+    bloc = BlocProvider.of<UserBloc>(context);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    Hive.close();
+    bloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +150,6 @@ class _BodyProfileState extends State<BodyProfile> {
             text: "LogOut",
             onPressed: () {
               // ignore: prefer_function_declarations_over_variables
-
               showDialog(
                   context: context,
                   builder: (context) {
@@ -179,54 +195,78 @@ class _BodyProfileState extends State<BodyProfile> {
     );
   }
 
-  Stack _buildHeader(Size size, String urlAvatar, String urlBackground) {
-    return Stack(
-      alignment: Alignment.center,
-      fit: StackFit.passthrough,
-      clipBehavior: Clip.none,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 130 / 2),
-          child: SizedBox(
-            width: size.width,
-            height: size.height * .3,
-            child: CachedNetworkImage(
-              imageUrl: urlBackground == ""
-                  ? "https://lvgames.net/lqm/wp-content/uploads/2020/10/hinh_nen_lauriel_phu_thuy_bi_ngo_download.jpg"
-                  : urlBackground,
-              fit: BoxFit.cover,
-              errorWidget: (context, url, error) => Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Invalid url background image',
-                    style: GoogleFonts.robotoMono(
-                      fontSize: 12.0,
-                      color: AppColors.error,
-                    ),
+  Widget _buildHeader(Size size, String urlAvatar, String urlBackground) {
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is UploadingState) {
+          PopupControl.instance.showLoading(context, size);
+        }
+        if (state is UploadSuccessfulState) {
+          AppRoutes.pop();
+        }
+        if (state is UploadErrorState) {
+          AppRoutes.pop();
+          PopupControl.instance
+              .showAuthError(context: context, error: state.message);
+        }
+      },
+      child: Stack(
+        alignment: Alignment.center,
+        fit: StackFit.passthrough,
+        clipBehavior: Clip.none,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 130 / 2),
+            child: InkWell(
+              onTap: () async {
+                final result = await sl<CameraServiceApp>().pickImage() as File;
+                print(result);
+                await sl<ImageResolveApp>()
+                    .compressAndGetFile(result, "background-image");
+                // bloc.add(ChangeBackground(file: result));
+              },
+              child: SizedBox(
+                width: size.width,
+                height: size.height * .3,
+                child: CachedNetworkImage(
+                  imageUrl: urlBackground == ""
+                      ? "https://lvgames.net/lqm/wp-content/uploads/2020/10/hinh_nen_lauriel_phu_thuy_bi_ngo_download.jpg"
+                      : sl.get<Api>().BASE_URL + urlBackground,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Invalid url background image',
+                        style: GoogleFonts.robotoMono(
+                          fontSize: 12.0,
+                          color: AppColors.error,
+                        ),
+                      ),
+                      const SizedBox(width: 10.0),
+                      const Icon(Icons.error, size: 20, color: AppColors.error),
+                    ],
                   ),
-                  const SizedBox(width: 10.0),
-                  const Icon(Icons.error, size: 20, color: AppColors.error),
-                ],
+                ),
               ),
-              filterQuality: FilterQuality.values.first,
             ),
           ),
-        ),
-        Positioned(
-          top: size.height * .3 - 130 / 2,
-          child: InkWell(
-            onTap: () async {},
+          Positioned(
+            top: size.height * .3 - 130 / 2,
             child: CircleAvatarCst(
               isHasBorder: true,
               isCameraIcon: true,
+              onPressed: () async {
+                final result = await sl<CameraServiceApp>().pickImage();
+                bloc.add(ChangeAvatar(file: result));
+              },
               radius: 130,
               urlAvatar: sl.get<Api>().BASE_URL + urlAvatar,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

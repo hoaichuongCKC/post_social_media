@@ -8,11 +8,13 @@ class CircleAvatarCst extends StatelessWidget {
     required this.urlAvatar,
     this.isHasBorder = false,
     this.widthBorder = 5.0,
+    this.onPressed,
   });
   final double radius;
   final bool isCameraIcon;
   final String urlAvatar;
   final bool isHasBorder;
+  final VoidCallback? onPressed;
   final double widthBorder;
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,8 @@ class CircleAvatarCst extends StatelessWidget {
                     widthFactor: 0.35,
                     heightFactor: 0.35,
                     child: InkWell(
-                      onTap: () {},
+                      onTap: onPressed,
+                      customBorder: const CircleBorder(),
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           color: AppColors.light,

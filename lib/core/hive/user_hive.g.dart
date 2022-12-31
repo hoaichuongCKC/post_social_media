@@ -17,11 +17,11 @@ class UserHiveAdapter extends TypeAdapter<UserHive> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UserHive(
-      accessToken: fields[0] as String? ?? '',
-      tokenType: fields[1] as String? ?? '',
-      displayName: fields[2] as String? ?? '',
-      avatar: fields[3] as String? ?? '',
-      imageBackground: fields[4] as String? ?? '',
+      accessToken: fields[0] as String,
+      tokenType: fields[1] as String,
+      displayName: fields[2] as String,
+      avatar: fields[3] as String,
+      imageBackground: fields[4] as String,
     );
   }
 

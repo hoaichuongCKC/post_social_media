@@ -1,20 +1,23 @@
 import 'package:post_media_social/config/export.dart';
+import 'package:post_media_social/core/api/api.dart';
+import 'package:post_media_social/models/user.dart';
 
 class InfoUserPost extends StatelessWidget {
-  const InfoUserPost(
-      {super.key,
-      this.maxHeight = 60,
-      this.minHeight = 50,
-      required this.height,
-      this.isComment = false,
-      required this.username,
-      required this.urlAvatar});
+  const InfoUserPost({
+    super.key,
+    this.maxHeight = 60,
+    this.minHeight = 50,
+    required this.height,
+    this.isComment = false,
+    required this.user,
+    required this.hasMyPost,
+  });
   final double maxHeight;
   final double minHeight;
   final double height;
   final bool isComment;
-  final String urlAvatar;
-  final String username;
+  final UserModel user;
+  final bool hasMyPost;
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -36,7 +39,9 @@ class InfoUserPost extends StatelessWidget {
                   Align(
                     alignment: Alignment.topCenter,
                     child: CircleAvatar(
-                      backgroundImage: CachedNetworkImageProvider(urlAvatar),
+                      backgroundImage: CachedNetworkImageProvider(
+                        sl.get<Api>().BASE_URL + user.avatar,
+                      ),
                       backgroundColor: Colors.transparent,
                       radius: isComment ? 20 : 30.0,
                     ),
@@ -52,7 +57,7 @@ class InfoUserPost extends StatelessWidget {
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              username,
+                              user.displayName,
                               style: AppStyleText.smallStyleDefault,
                             ),
                           ),
@@ -85,10 +90,12 @@ class InfoUserPost extends StatelessWidget {
                 ],
               ),
             ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: SvgPicture.asset("assets/icons/trash.svg"),
-            ),
+            hasMyPost
+                ? Align(
+                    alignment: Alignment.topCenter,
+                    child: SvgPicture.asset("assets/icons/trash.svg"),
+                  )
+                : const SizedBox(),
           ],
         ),
       ),

@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:post_media_social/bloc/register/register_bloc.dart';
 import 'package:post_media_social/core/error/error.dart';
@@ -15,6 +17,8 @@ abstract class AuthRepo {
   Future<Either<Failure, int>> logout();
   Future<Either<Failure, BodyResponse>> authPhone(String phone);
   Future<Either<Failure, BodyResponse>> register(SubmitRegisterEvent event);
+  Future<Either<Failure, BodyResponse>> uploadFile(
+      File file, String uriRequest);
 }
 
 class AuthRepoImpl extends AuthRepo {
@@ -82,6 +86,21 @@ class AuthRepoImpl extends AuthRepo {
     if (await networkInfo.isConnected) {
       try {
         final data = await dataSource.register(event);
+        return Right(data);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(InternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, BodyResponse>> uploadFile(
+      File file, String uriRequest) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final data = await dataSource.uploadFile(file, uriRequest);
         return Right(data);
       } on ServerException {
         return Left(ServerFailure());

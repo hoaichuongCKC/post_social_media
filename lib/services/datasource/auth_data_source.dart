@@ -2,6 +2,7 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:post_media_social/bloc/register/register_bloc.dart';
 import 'package:post_media_social/core/api/api.dart';
@@ -15,6 +16,7 @@ abstract class AuthDataSource {
   Future<int> logout();
   Future<BodyResponse> authPhone(String phone);
   Future<BodyResponse> register(SubmitRegisterEvent eventRegister);
+  Future<BodyResponse> uploadFile(File file, String uriRequest);
 }
 
 class AuthDataSourceImpl implements AuthDataSource {
@@ -139,5 +141,38 @@ class AuthDataSourceImpl implements AuthDataSource {
         statusCode: response.statusCode, user: userModel);
 
     return data;
+  }
+
+  @override
+  Future<BodyResponse> uploadFile(File file, String uriRequest) async {
+    final uri = Uri.parse(getApi.BASE_URL + uriRequest);
+
+    final getInfoUser = await BoxUser.instance.getData();
+
+    final headers = {
+      "Authorization": "${getInfoUser.tokenType} ${getInfoUser.accessToken}",
+      "Accept": "application/json",
+    };
+
+    //initial request send up to server
+    http.MultipartRequest request = http.MultipartRequest('POST', uri);
+
+    //multipart file
+    http.MultipartFile multipartFile =
+        await http.MultipartFile.fromPath('image', file.path);
+
+    //add filed file
+    request.files.add(multipartFile);
+
+    request.headers.addAll(headers);
+
+    //send request up to server
+    http.StreamedResponse response = await request.send();
+
+    //body data
+    Map<String, dynamic> map =
+        jsonDecode(await response.stream.bytesToString());
+
+    return BodyResponse.fromJson(map, statusCode: response.statusCode);
   }
 }
