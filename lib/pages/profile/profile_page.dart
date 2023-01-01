@@ -11,22 +11,34 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<UserBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<UserBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<AuthBloc>(),
+        ),
+      ],
       child: Scaffold(
         backgroundColor: AppColors.light,
         body: ValueListenableBuilder<Box<UserHive>>(
             valueListenable: Hive.box<UserHive>(BoxUser.nameBox).listenable(),
             builder: (context, box, child) {
-              final boxUser = box.values.first;
+              final boxUser = box.values.isEmpty
+                  ? []
+                  : box.values.cast<UserHive>().toList();
 
-              final user = UserModel(
-                  avatar: boxUser.avatar,
-                  username: boxUser.username,
-                  imageBackground: boxUser.imageBackground,
-                  displayName: boxUser.displayName);
+              if (boxUser.isNotEmpty) {
+                final user = UserModel(
+                    avatar: boxUser[0].avatar,
+                    username: boxUser[0].username,
+                    imageBackground: boxUser[0].imageBackground,
+                    displayName: boxUser[0].displayName);
+                return BodyProfile(data: user);
+              }
 
-              return BodyProfile(data: user);
+              return const SizedBox();
             }),
       ),
     );
@@ -44,16 +56,19 @@ class _BodyProfileState extends State<BodyProfile> {
   UserModel get getData => widget.data;
 
   late UserBloc bloc;
+  late AuthBloc _authBloc;
 
   @override
   void initState() {
     bloc = BlocProvider.of<UserBloc>(context);
+    _authBloc = BlocProvider.of<AuthBloc>(context);
     super.initState();
   }
 
   @override
   void dispose() {
     bloc.close();
+    _authBloc.close();
     super.dispose();
   }
 
@@ -165,7 +180,7 @@ class _BodyProfileState extends State<BodyProfile> {
                       actionsPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                       actions: [
                         TextButton(
-                          onPressed: () => sl<AuthBloc>().add(LogoutUser()),
+                          onPressed: () => _authBloc.add(LogoutUser()),
                           child: Text(
                             "yes",
                             style: GoogleFonts.robotoMono(

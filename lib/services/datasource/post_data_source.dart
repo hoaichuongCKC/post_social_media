@@ -24,7 +24,7 @@ class PostDataSourceImpl implements PostDataSource {
         "${getApi.BASE_URL}${getApi.postUrl}?page=$page&limit=$limit");
 
     http.MultipartRequest request = http.MultipartRequest('POST', uri);
-    print(getApi.headers);
+
     request.headers.addAll(getApi.headers);
 
     //send request up to server

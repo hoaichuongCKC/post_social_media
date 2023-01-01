@@ -19,6 +19,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<LoadMorePostEvent>(_handleLoadMorePost);
     on<AddNewPostEvent>(_onAddNewPost);
     on<OnRefreshDataEvent>((event, emit) {
+      final state = this.state;
+      if (state is HomeSuccessfulState) {
+        state.listPost.clear();
+      }
       add(LoadPostEvent(page: event.page, limit: event.limit));
     });
   }
@@ -45,7 +49,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           switch (dataResponse.statusCode) {
             case 200:
               emit(HomeSuccessfulState(
-                  listPost: dataResponse.data, hasFirstPost: true));
+                  listPost: dataResponse.data, hasLoadMore: true));
               break;
             case 201:
               emit(const HomeErrorState(message: "I don't know anything"));
@@ -85,7 +89,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
               emit(
                 HomeSuccessfulState(
                     listPost: state.listPost,
-                    hasFirstPost: false,
+                    hasLoadMore: false,
                     stateLoad: LoadDataEmtpy()),
               );
             } else {
@@ -93,7 +97,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
                 HomeSuccessfulState(
                     listPost: List<PostModel>.from(state.listPost)
                       ..addAll(dataResponse.data),
-                    hasFirstPost: false,
+                    hasLoadMore: false,
                     stateLoad: SuccessfulMoreData()),
               );
             }
@@ -107,11 +111,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       AddNewPostEvent event, Emitter<HomeState> emit) async {
     final state = this.state;
     if (state is HomeSuccessfulState) {
-      final post = jsonDecode(event.post)["data"];
-      print(post);
-      // emit(HomeSuccessfulState(
-      //     listPost: List<PostModel>.from(state.listPost)..insert(0, post),
-      //     hasFirstPost: false));
+      final postMap = jsonDecode(event.post)["data"];
+
+      final postModel = PostModel.fromJson(postMap);
+
+      emit(HomeSuccessfulState(
+          listPost: List<PostModel>.from(state.listPost)..insert(0, postModel),
+          hasLoadMore: false));
     }
   }
 }

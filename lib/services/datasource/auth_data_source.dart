@@ -136,7 +136,6 @@ class AuthDataSourceImpl implements AuthDataSource {
   @override
   Future<BodyResponse> uploadFile(File file, String uriRequest) async {
     final uri = Uri.parse(getApi.BASE_URL + uriRequest);
-
     //initial request send up to server
     http.MultipartRequest request = http.MultipartRequest('POST', uri);
 

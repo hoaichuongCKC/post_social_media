@@ -41,7 +41,7 @@ Future<void> configureDependencies() async {
   // //! Core
   sl.registerLazySingleton(() => NetworkInfoImpl(sl()));
 
-  sl.registerFactory(() => Api());
+  sl.registerLazySingleton(() => Api());
 
   // //! External
   sl.registerLazySingleton(() => Connectivity());

@@ -2,22 +2,23 @@ import 'package:post_media_social/bloc/home/home_bloc.dart';
 import 'package:post_media_social/common/components/item_post.dart';
 import 'package:post_media_social/config/export.dart';
 
-class ListPostHome extends StatefulWidget {
+class ListPostHome extends StatelessWidget {
   const ListPostHome({super.key});
 
   @override
-  State<ListPostHome> createState() => _ListPostHomeState();
-}
-
-class _ListPostHomeState extends State<ListPostHome> {
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
-      buildWhen: (previous, current) => current is HomeSuccessfulState
-          ? current.hasFirstPost == true ||
-              current.hasFirstPost == false ||
-              current.stateLoad == SuccessfulMoreData()
-          : false,
+      buildWhen: (previous, current) {
+        if (current is HomeSuccessfulState) {
+          if (current.hasLoadMore == true ||
+              (current.hasLoadMore == false) ||
+              current.stateLoad == SuccessfulMoreData()) {
+            return true;
+          }
+        }
+
+        return false;
+      },
       builder: (context, state) {
         if (state is HomeSuccessfulState) {
           return SliverList(

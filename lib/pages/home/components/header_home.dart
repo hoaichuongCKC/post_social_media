@@ -1,5 +1,6 @@
 import 'package:post_media_social/common/widgets/circle_avatar.dart';
 import 'package:post_media_social/config/export.dart';
+import 'package:post_media_social/models/user.dart';
 
 import '../../../core/api/api.dart';
 
@@ -28,17 +29,23 @@ class HeaderHome extends StatelessWidget {
                     valueListenable:
                         Hive.box<UserHive>(BoxUser.nameBox).listenable(),
                     builder: (context, box, child) {
-                      final data = box.values.first;
-                      return Text(
-                        'Hi ${data.displayName}',
-                        style: GoogleFonts.robotoMono(
-                          fontSize: 22.0,
-                          color: AppColors.dark,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      );
+                      final boxUser = box.values.isEmpty
+                          ? []
+                          : box.values.cast<UserHive>().toList();
+
+                      if (boxUser.isNotEmpty) {
+                        return Text(
+                          'Hi ${boxUser[0].displayName}',
+                          style: GoogleFonts.robotoMono(
+                            fontSize: 22.0,
+                            color: AppColors.dark,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        );
+                      }
+                      return const SizedBox();
                     },
                   ),
                   const SizedBox(height: 8.0),
@@ -57,13 +64,25 @@ class HeaderHome extends StatelessWidget {
           ValueListenableBuilder<Box<UserHive>>(
             valueListenable: Hive.box<UserHive>(BoxUser.nameBox).listenable(),
             builder: (context, box, child) {
-              final data = box.values.first;
-              return CircleAvatarCst(
-                radius: 90,
-                boxFit: BoxFit.contain,
-                // backgroundColor: AppColors.light,
-                urlAvatar: sl.get<Api>().BASE_URL + data.avatar,
-              );
+              final boxUser = box.values.isEmpty
+                  ? []
+                  : box.values.cast<UserHive>().toList();
+
+              if (boxUser.isNotEmpty) {
+                final user = UserModel(
+                    avatar: boxUser[0].avatar,
+                    username: boxUser[0].username,
+                    imageBackground: boxUser[0].imageBackground,
+                    displayName: boxUser[0].displayName);
+                return CircleAvatarCst(
+                  radius: 90,
+                  boxFit: BoxFit.contain,
+                  // backgroundColor: AppColors.light,
+                  urlAvatar: sl.get<Api>().BASE_URL + user.avatar,
+                );
+              }
+
+              return const SizedBox();
             },
           ),
         ],

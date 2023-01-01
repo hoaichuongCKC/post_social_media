@@ -22,9 +22,15 @@ class Api {
 
   Map<String, String> get headers => _headers;
 
+  void setupHeader(String accessToken, String tokenType) {
+    _headers = {
+      "Authorization": "$tokenType $accessToken",
+      "Accept": "application/json",
+    };
+  }
+
   initApi() async {
     final getStorage = await BoxUser.instance.getData();
-    print(getStorage);
     if (getStorage != null) {
       _headers = {
         "Authorization": "${getStorage.tokenType} ${getStorage.accessToken}",

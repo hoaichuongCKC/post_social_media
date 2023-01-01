@@ -38,6 +38,7 @@ class InfoUserPost extends StatelessWidget {
                   Align(
                     alignment: Alignment.topCenter,
                     child: CircleAvatar(
+                      key: ValueKey(user.avatar),
                       backgroundImage: CachedNetworkImageProvider(
                         sl.get<Api>().BASE_URL + user.avatar,
                       ),
@@ -90,16 +91,24 @@ class InfoUserPost extends StatelessWidget {
               ),
             ),
             ValueListenableBuilder<Box<UserHive>>(
-                valueListenable:
-                    Hive.box<UserHive>(BoxUser.nameBox).listenable(),
-                builder: (context, box, child) {
-                  final data = box.values.first;
+              valueListenable: Hive.box<UserHive>(BoxUser.nameBox).listenable(),
+              builder: (context, box, child) {
+                // final data = box.values.first;
+                final boxUser = box.values.isEmpty
+                    ? []
+                    : box.values.cast<UserHive>().toList();
 
-                  return Align(
-                    alignment: Alignment.topCenter,
-                    child: SvgPicture.asset("assets/icons/trash.svg"),
-                  );
-                })
+                if (boxUser.isNotEmpty) {
+                  if (boxUser[0].id == user.id) {
+                    return Align(
+                      alignment: Alignment.topCenter,
+                      child: SvgPicture.asset("assets/icons/trash.svg"),
+                    );
+                  }
+                }
+                return const SizedBox();
+              },
+            )
           ],
         ),
       ),

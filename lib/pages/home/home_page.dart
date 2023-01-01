@@ -20,67 +20,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  ValueNotifier<int> indexChanged = ValueNotifier<int>(0);
-  @override
-  void dispose() {
-    super.dispose();
-
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    return BlocProvider(
-      create: (context) => sl<HomeBloc>(),
-      child: Scaffold(
-        bottomNavigationBar: BottomNavHome(
-          onTap: (int index) {
-            indexChanged.value = index;
-          },
-        ),
-        backgroundColor: AppColors.light,
-        body: SafeArea(
-          child: ValueListenableBuilder(
-            valueListenable: indexChanged,
-            builder: (context, int currentIndex, child) {
-              return IndexedStack(
-                index: currentIndex,
-                children: [
-                  BodyHome(size: size),
-                  const ProfilePage(),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class BodyHome extends StatefulWidget {
-  const BodyHome({
-    super.key,
-    required this.size,
-  });
-
-  final Size size;
-
-  @override
-  State<BodyHome> createState() => _BodyHomeState();
-}
-
-class _BodyHomeState extends State<BodyHome> {
   int _page = 0;
 
-  final int _limit = 10;
+  final int _limit = 5;
+
+  bool _canLoadMore = true;
 
   late ScrollController _scrollController;
 
   late HomeBloc _homeBloc;
-
-  final ValueNotifier<bool> _isLoading = ValueNotifier<bool>(false);
 
   //Declare pusher
 
@@ -88,148 +36,156 @@ class _BodyHomeState extends State<BodyHome> {
 
   final AppPusher _pusherClient = AppPusher();
 
+  ValueNotifier<int> indexPage = ValueNotifier(0);
+
   @override
   void initState() {
     super.initState();
 
-    _homeBloc = BlocProvider.of<HomeBloc>(context);
-
-    _homeBloc.stream.listen((state) {
-      if (state is HomeSuccessfulState) {
-        if (state.stateLoad is LoadDataEmtpy) {
-          //chặn add eventn load more
+    _homeBloc = BlocProvider.of<HomeBloc>(context)
+      ..add(LoadPostEvent(limit: _limit, page: _page))
+      ..stream.listen((state) {
+        if (state is HomeSuccessfulState) {
+          if (state.stateLoad is LoadDataEmtpy) {
+            _canLoadMore = false;
+          }
         }
-      }
-    });
+      });
+
+    _pusherClient.initPusher(
+      onEvent: (PusherEvent event) {
+        if (event.data.isNotEmpty) {
+          _homeBloc.add(AddNewPostEvent(post: event.data));
+        }
+      },
+      onError: (message, code, error) {},
+      channelName: _channelName,
+    );
 
     _scrollController = ScrollController()
       ..addListener(() {
-        // if (_scrollController.offset ==
-        //     _scrollController.position.maxScrollExtent) {
-        //   if (_isHasData) {
-        //     ++_page;
-        //     _homeBloc.add(LoadMorePostEvent(limit: _limit, page: _page));
-        //     _isLoading.value = true;
-        //   }
-        // }
-      });
-  }
+        if (!_scrollController.hasClients) return;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _homeBloc.add(LoadPostEvent(limit: _limit, page: _page));
-    _pusherClient.initPusher(
-        onEvent: (PusherEvent event) {
-          if (event.data != null) {
-            _homeBloc.add(AddNewPostEvent(post: event.data));
+        if (_scrollController.hasClients &&
+            _scrollController.position.pixels ==
+                _scrollController.position.maxScrollExtent) {
+          if (_canLoadMore) {
+            _page++;
+            _homeBloc.add(LoadMorePostEvent(page: _page, limit: _limit));
           }
-        },
-        onError: (message, code, error) {
-          print("message from pusher $message");
-          print("code from pusher $code");
-          print("error from pusher $error");
-        },
-        channelName: _channelName);
+        }
+      });
   }
 
   @override
   void dispose() {
     super.dispose();
+    indexPage.dispose();
     _pusherClient.disconnectPusher();
-    _homeBloc.close();
-    _isLoading.dispose();
     _scrollController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (Platform.isAndroid) {
-          SystemNavigator.pop();
-        } else if (Platform.isIOS) {
-          exit(0);
-        }
-        return true;
-      },
-      child: BlocBuilder<HomeBloc, HomeState>(
-        buildWhen: (previous, current) {
-          if (current is HomeSuccessfulState) {
-            return current.hasFirstPost == true;
-          }
-          return previous != current;
+    return Scaffold(
+      bottomNavigationBar: BottomNavHome(
+        onTap: (int index) {
+          indexPage.value = index;
         },
-        builder: (context, state) {
-          if (state is HomeLoadingState) {
-            return Center(
-              child: spinkit,
-            );
-          }
-          if (state is HomeErrorState) {
-            return Center(
-              child: Text(state.message),
-            );
-          }
+      ),
+      backgroundColor: AppColors.light,
+      body: SafeArea(
+        child: ValueListenableBuilder(
+            valueListenable: indexPage,
+            builder: (context, int currentIndex, child) {
+              return IndexedStack(
+                index: currentIndex,
+                children: [
+                  _buildBody(),
+                  const ProfilePage(),
+                ],
+              );
+            }),
+      ),
+    );
+  }
 
-          if (state is HomeSuccessfulState) {
-            return RefreshIndicator(
-              edgeOffset: 0,
-              strokeWidth: 1.5,
-              onRefresh: () async {
-                _page = 0;
+  Widget _buildBody() => WillPopScope(
+        onWillPop: () async {
+          if (Platform.isAndroid) {
+            SystemNavigator.pop();
+          } else if (Platform.isIOS) {
+            exit(0);
+          }
+          return true;
+        },
+        child: BlocBuilder<HomeBloc, HomeState>(
+          buildWhen: (previous, current) {
+            if (current is HomeSuccessfulState) {
+              return current.hasLoadMore == true;
+            }
+            return previous != current;
+          },
+          builder: (context, state) {
+            if (state is HomeLoadingState) {
+              return Center(
+                child: spinkit,
+              );
+            }
+            if (state is HomeErrorState) {
+              return Center(
+                child: Text(state.message),
+              );
+            }
 
-                _homeBloc.add(OnRefreshDataEvent(page: _page, limit: _limit));
-              },
-              child: CustomScrollView(
-                controller: _scrollController,
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxHeight: 220,
-                          minHeight: 180,
-                        ),
-                        child: SizedBox(
-                          height: widget.size.height * 0.2,
-                          width: double.infinity,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              HeaderHome(size: widget.size),
-                              const TabHome(),
-                              const Divider(),
-                            ],
+            if (state is HomeSuccessfulState) {
+              return RefreshIndicator(
+                edgeOffset: 0,
+                strokeWidth: 1.5,
+                onRefresh: () async {
+                  _page = 0;
+
+                  _homeBloc.add(OnRefreshDataEvent(page: _page, limit: _limit));
+                },
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxHeight: 220,
+                            minHeight: 180,
+                          ),
+                          child: SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.2,
+                            width: double.infinity,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                HeaderHome(size: MediaQuery.of(context).size),
+                                const TabHome(),
+                                const Divider(),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const ListPostHome(),
-                  SliverToBoxAdapter(
-                    child: ValueListenableBuilder<bool>(
-                        valueListenable: _isLoading,
-                        builder: (context, bool currentLoading, child) {
-                          if (currentLoading) {
-                            return Center(
-                              child: spinkit,
-                            );
-                          }
-                          return const SizedBox(
-                            height: 20.0,
-                            child: null,
-                          );
-                        }),
-                  )
-                ],
-              ),
-            );
-          }
-          return const SizedBox();
-        },
-      ),
-    );
-  }
+                    const ListPostHome(),
+                    const SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: 20.0,
+                        child: null,
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }
+            return const SizedBox();
+          },
+        ),
+      );
 }

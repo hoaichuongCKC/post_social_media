@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, unnecessary_overrides, must_be_immutable
-import 'dart:io';
 
-import 'package:hive/hive.dart';
+import 'package:post_media_social/config/export.dart';
+import 'package:post_media_social/core/api/api.dart';
 
 part 'user_hive.g.dart';
 
@@ -88,7 +88,7 @@ class BoxUser extends UserQuery {
   @override
   Future setData(UserHive hive) async {
     final box = await initBox();
-    print(hive);
+    sl.get<Api>().setupHeader(hive.accessToken, hive.tokenType);
     await box.add(hive);
   }
 

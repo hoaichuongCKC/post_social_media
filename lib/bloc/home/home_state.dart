@@ -14,15 +14,15 @@ class HomeLoadingState extends HomeState {}
 
 class HomeSuccessfulState extends HomeState {
   final List<PostModel> listPost;
-  final bool hasFirstPost;
+  final bool hasLoadMore;
   final LoadMore stateLoad;
   const HomeSuccessfulState({
     required this.listPost,
-    required this.hasFirstPost,
+    required this.hasLoadMore,
     this.stateLoad = const LoadDataInit(),
   });
   @override
-  List<Object> get props => [listPost, hasFirstPost, stateLoad];
+  List<Object> get props => [listPost, hasLoadMore, stateLoad];
 }
 
 class HomeErrorState extends HomeState {
