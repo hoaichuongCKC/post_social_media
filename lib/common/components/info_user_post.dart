@@ -10,14 +10,13 @@ class InfoUserPost extends StatelessWidget {
     required this.height,
     this.isComment = false,
     required this.user,
-    required this.hasMyPost,
   });
   final double maxHeight;
   final double minHeight;
   final double height;
   final bool isComment;
   final UserModel user;
-  final bool hasMyPost;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -90,12 +89,17 @@ class InfoUserPost extends StatelessWidget {
                 ],
               ),
             ),
-            hasMyPost
-                ? Align(
+            ValueListenableBuilder<Box<UserHive>>(
+                valueListenable:
+                    Hive.box<UserHive>(BoxUser.nameBox).listenable(),
+                builder: (context, box, child) {
+                  final data = box.values.first;
+
+                  return Align(
                     alignment: Alignment.topCenter,
                     child: SvgPicture.asset("assets/icons/trash.svg"),
-                  )
-                : const SizedBox(),
+                  );
+                })
           ],
         ),
       ),

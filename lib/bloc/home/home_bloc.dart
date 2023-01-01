@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:post_media_social/core/error/error.dart';
@@ -16,6 +17,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({required this.postRepoImpl}) : super(HomeInitial()) {
     on<LoadPostEvent>(_handleLoadPost);
     on<LoadMorePostEvent>(_handleLoadMorePost);
+    on<AddNewPostEvent>(_onAddNewPost);
     on<OnRefreshDataEvent>((event, emit) {
       add(LoadPostEvent(page: event.page, limit: event.limit));
     });
@@ -99,5 +101,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         }
       },
     );
+  }
+
+  Future<void> _onAddNewPost(
+      AddNewPostEvent event, Emitter<HomeState> emit) async {
+    final state = this.state;
+    if (state is HomeSuccessfulState) {
+      final post = jsonDecode(event.post)["data"];
+      print(post);
+      // emit(HomeSuccessfulState(
+      //     listPost: List<PostModel>.from(state.listPost)..insert(0, post),
+      //     hasFirstPost: false));
+    }
   }
 }

@@ -5,8 +5,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:post_media_social/bloc/register/register_bloc.dart';
+import 'package:post_media_social/config/export.dart';
 import 'package:post_media_social/core/api/api.dart';
-import 'package:post_media_social/core/hive/user_hive.dart';
 import 'package:post_media_social/core/response/response.dart';
 import 'package:post_media_social/models/user.dart';
 
@@ -57,12 +57,7 @@ class AuthDataSourceImpl implements AuthDataSource {
   Future<DataResponse<dynamic>> me(String accessToken, String tokenType) async {
     final uri = Uri.parse(getApi.BASE_URL + getApi.meUrl);
 
-    final headers = {
-      "Authorization": "$tokenType $accessToken",
-      "Accept": "application/json",
-    };
-
-    final response = await http.post(uri, headers: headers);
+    final response = await http.post(uri, headers: getApi.headers);
 
     var convert = jsonDecode(response.body) as Map<String, dynamic>;
     var data;
@@ -80,14 +75,9 @@ class AuthDataSourceImpl implements AuthDataSource {
   Future<int> logout() async {
     final uri = Uri.parse(getApi.BASE_URL + getApi.logoutUrl);
 
-    final getToken = await BoxUser.instance.getData();
+    await BoxUser.instance.deleteStorageToken();
 
-    final headers = {
-      "Authorization": "${getToken.tokenType} ${getToken.accessToken}",
-      "Accept": "application/json",
-    };
-
-    final response = await http.post(uri, headers: headers);
+    final response = await http.post(uri, headers: getApi.headers);
 
     return response.statusCode;
   }
@@ -147,13 +137,6 @@ class AuthDataSourceImpl implements AuthDataSource {
   Future<BodyResponse> uploadFile(File file, String uriRequest) async {
     final uri = Uri.parse(getApi.BASE_URL + uriRequest);
 
-    final getInfoUser = await BoxUser.instance.getData();
-
-    final headers = {
-      "Authorization": "${getInfoUser.tokenType} ${getInfoUser.accessToken}",
-      "Accept": "application/json",
-    };
-
     //initial request send up to server
     http.MultipartRequest request = http.MultipartRequest('POST', uri);
 
@@ -164,7 +147,7 @@ class AuthDataSourceImpl implements AuthDataSource {
     //add filed file
     request.files.add(multipartFile);
 
-    request.headers.addAll(headers);
+    request.headers.addAll(getApi.headers);
 
     //send request up to server
     http.StreamedResponse response = await request.send();

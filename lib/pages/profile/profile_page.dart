@@ -1,13 +1,10 @@
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:post_media_social/bloc/auth/auth_bloc.dart';
 import 'package:post_media_social/bloc/user/user_bloc.dart';
 import 'package:post_media_social/common/widgets/circle_avatar.dart';
 import 'package:post_media_social/config/export.dart';
 import 'package:post_media_social/core/api/api.dart';
-import 'package:post_media_social/core/camera/camera_app.dart';
-import 'package:post_media_social/core/hive/user_hive.dart';
-import 'package:post_media_social/core/image/image_app.dart';
 import 'package:post_media_social/models/user.dart';
+import 'dart:io';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -25,6 +22,7 @@ class ProfilePage extends StatelessWidget {
 
               final user = UserModel(
                   avatar: boxUser.avatar,
+                  username: boxUser.username,
                   imageBackground: boxUser.imageBackground,
                   displayName: boxUser.displayName);
 
@@ -55,7 +53,6 @@ class _BodyProfileState extends State<BodyProfile> {
 
   @override
   void dispose() {
-    Hive.close();
     bloc.close();
     super.dispose();
   }
@@ -66,7 +63,8 @@ class _BodyProfileState extends State<BodyProfile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildHeader(size, getData.avatar, getData.imageBackground),
+        _buildHeader(
+            size, getData.avatar, getData.imageBackground, getData.username),
         const SizedBox(height: 15.0),
         Text(
           getData.displayName,
@@ -195,7 +193,8 @@ class _BodyProfileState extends State<BodyProfile> {
     );
   }
 
-  Widget _buildHeader(Size size, String urlAvatar, String urlBackground) {
+  Widget _buildHeader(
+      Size size, String urlAvatar, String urlBackground, String username) {
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
         if (state is UploadingState) {
@@ -220,10 +219,9 @@ class _BodyProfileState extends State<BodyProfile> {
             child: InkWell(
               onTap: () async {
                 final result = await sl<CameraServiceApp>().pickImage() as File;
-                print(result);
-                await sl<ImageResolveApp>()
-                    .compressAndGetFile(result, "background-image");
-                // bloc.add(ChangeBackground(file: result));
+                final file = await sl<ImageResolveApp>()
+                    .compressAndGetFile(result, username);
+                bloc.add(ChangeBackground(file: file));
               },
               child: SizedBox(
                 width: size.width,
@@ -258,7 +256,11 @@ class _BodyProfileState extends State<BodyProfile> {
               isHasBorder: true,
               isCameraIcon: true,
               onPressed: () async {
+                // get local image
+
                 final result = await sl<CameraServiceApp>().pickImage();
+                //hanlde compress file image has choose
+
                 bloc.add(ChangeAvatar(file: result));
               },
               radius: 130,

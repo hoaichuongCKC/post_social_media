@@ -14,7 +14,7 @@ abstract class PostRepo {
   Future<Either<Failure, DataResponse<List<PostModel>>>> getListPost(
       int page, int limit);
   Future<Either<Failure, DataResponse<String>>> createPost(
-      String content, File file);
+      String content, List<File> list);
 }
 
 class PostRepoImpl extends PostRepo {
@@ -44,10 +44,10 @@ class PostRepoImpl extends PostRepo {
 
   @override
   Future<Either<Failure, DataResponse<String>>> createPost(
-      String content, File file) async {
+      String content, List<File> list) async {
     if (await networkInfo.isConnected) {
       try {
-        final data = await dataSource.createPost(content, file);
+        final data = await dataSource.createPost(content, list);
         return Right(data);
       } on ServerException {
         return Left(ServerFailure());

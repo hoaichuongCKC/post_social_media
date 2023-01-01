@@ -1,7 +1,5 @@
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:post_media_social/common/widgets/circle_avatar.dart';
 import 'package:post_media_social/config/export.dart';
-import 'package:post_media_social/core/hive/user_hive.dart';
 
 import '../../../core/api/api.dart';
 
@@ -62,6 +60,7 @@ class HeaderHome extends StatelessWidget {
               final data = box.values.first;
               return CircleAvatarCst(
                 radius: 90,
+                boxFit: BoxFit.contain,
                 // backgroundColor: AppColors.light,
                 urlAvatar: sl.get<Api>().BASE_URL + data.avatar,
               );

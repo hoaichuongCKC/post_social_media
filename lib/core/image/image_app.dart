@@ -23,18 +23,47 @@ class ImageResolveApp {
 
   Future<File> compressAndGetFile(File file, String targetPath,
       {Size size = const Size(1920, 1080)}) async {
+    final filePath = file.absolute.path;
+
+    final lastIndex = filePath.lastIndexOf(RegExp(r'.jp'));
+
+    final splitted = filePath.substring(0, (lastIndex));
+
+    final outPath =
+        "${splitted}_${targetPath}_out${filePath.substring(lastIndex)}";
+
     var result = await FlutterImageCompress.compressAndGetFile(
-      file.absolute.path,
-      targetPath,
-      minWidth: size.width.toInt(),
-      minHeight: size.height.toInt(),
-      quality: 88,
+      filePath,
+      outPath,
     );
 
-    print(file.lengthSync());
-    print(result!.lengthSync());
-    print(result.path);
+    return result!;
+  }
 
-    return result;
+  Future<List<File>> compressAndGetListFile(
+      List<XFile> listFile, String targetPath,
+      {Size size = const Size(1920, 1080)}) async {
+    List<File> data = [];
+    for (var file in listFile) {
+      final filePath = File(file.path).absolute.path;
+
+      final lastIndex = filePath.lastIndexOf(RegExp(r'.jp'));
+
+      final splitted = filePath.substring(0, (lastIndex));
+
+      final outPath =
+          "${splitted}_${targetPath}_out${filePath.substring(lastIndex)}";
+
+      var result = await FlutterImageCompress.compressAndGetFile(
+        filePath,
+        outPath,
+      );
+
+      if (result != null) {
+        data.add(result);
+      }
+    }
+
+    return data;
   }
 }

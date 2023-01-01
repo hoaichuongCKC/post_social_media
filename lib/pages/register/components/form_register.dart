@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:post_media_social/bloc/register/register_bloc.dart';
 import 'package:post_media_social/config/export.dart';
-import 'package:post_media_social/core/camera/camera_app.dart';
 
 class FormRegister extends StatefulWidget {
   const FormRegister({super.key});

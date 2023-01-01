@@ -1,8 +1,10 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:post_media_social/core/hive/user_hive.dart';
+
 class Api {
   final String BASE_URL =
-      "https://6e64-2405-4802-a216-e970-6d50-e1c4-66cf-cb0c.ap.ngrok.io";
+      "https://c19e-2405-4802-a216-e970-b9a6-5261-840c-879a.ap.ngrok.io";
 
   // [Auth controller]
   final String loginUrl = "/api/auth/login";
@@ -14,4 +16,24 @@ class Api {
 
   // [Post controller]
   final String postUrl = "/api/post-control/get-post";
+  final String createPostUrl = "/api/post-control/create-post";
+
+  Map<String, String> _headers = {};
+
+  Map<String, String> get headers => _headers;
+
+  initApi() async {
+    final getStorage = await BoxUser.instance.getData();
+    print(getStorage);
+    if (getStorage != null) {
+      _headers = {
+        "Authorization": "${getStorage.tokenType} ${getStorage.accessToken}",
+        "Accept": "application/json",
+      };
+    }
+  }
+
+  Api() {
+    initApi();
+  }
 }

@@ -13,7 +13,6 @@ class PostModel extends Equatable {
   final UserModel user;
   final List<ImagePostModel> image;
   final String content;
-  final bool hasMyPost;
   final int likeNumber;
   final int cmtNumber;
   final List likeUser;
@@ -23,7 +22,6 @@ class PostModel extends Equatable {
     required this.user,
     required this.image,
     required this.content,
-    required this.hasMyPost,
     required this.likeNumber,
     required this.cmtNumber,
     required this.likeUser,
@@ -46,7 +44,6 @@ class PostModel extends Equatable {
         user,
         image,
         content,
-        hasMyPost,
         likeNumber,
         cmtNumber,
         likeUser,

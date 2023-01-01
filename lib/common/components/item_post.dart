@@ -23,9 +23,9 @@ class ItemPost extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: InfoUserPost(
-                height: size.height * .1,
-                user: postModel.user,
-                hasMyPost: postModel.hasMyPost),
+              height: size.height * .1,
+              user: postModel.user,
+            ),
           ),
           BodyPost(
             title: postModel.content,
@@ -73,20 +73,51 @@ class BodyPost extends StatelessWidget {
             ),
           ),
         ),
-        ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxHeight: 300,
-            minHeight: 250,
-          ),
-          child: SizedBox(
-            width: double.infinity,
-            height: size.height * .3,
-            child: CachedNetworkImage(
-              imageUrl: sl.get<Api>().BASE_URL + imagePost[0].link,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+        imagePost.isEmpty
+            ? const SizedBox()
+            : ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 300,
+                  minHeight: 250,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: size.height * .3,
+                  child: (imagePost.length == 1)
+                      ? CachedNetworkImage(
+                          imageUrl: sl.get<Api>().BASE_URL + imagePost[0].link,
+                          fit: BoxFit.cover,
+                        )
+                      : Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: imagePost.map(
+                            (e) {
+                              {
+                                final index = imagePost.indexOf(e);
+                                return Expanded(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [
+                                      Expanded(
+                                        child: CachedNetworkImage(
+                                          imageUrl:
+                                              sl.get<Api>().BASE_URL + e.link,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      index == imagePost.length - 1
+                                          ? const SizedBox()
+                                          : const SizedBox(width: 5),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
+                          ).toList(),
+                        ),
+                ),
+              )
       ],
     );
   }
@@ -166,7 +197,10 @@ class BottomPost extends StatelessWidget {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    SvgPicture.asset("assets/icons/love.svg"),
+                                    SvgPicture.asset(
+                                      "assets/icons/love.svg",
+                                      color: AppColors.disable,
+                                    ),
                                     const SizedBox(width: 6.0),
                                     Text(
                                       "Like",

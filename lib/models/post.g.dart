@@ -13,10 +13,9 @@ PostModel _$PostModelFromJson(Map<String, dynamic> json) => PostModel(
           .map((e) => ImagePostModel.fromJson(e as Map<String, dynamic>))
           .toList(),
       content: json['content'] as String,
-      hasMyPost: json['hasMyPost'] as bool,
       likeNumber: json['likeNumber'] as int,
       cmtNumber: json['cmtNumber'] as int,
-      likeUser: json['likeUser'] as List<dynamic>? ?? [],
+      likeUser: json['likeUser'] as List<dynamic>,
       created_at: DateTime.parse(json['created_at'] as String),
     );
 
@@ -25,8 +24,8 @@ Map<String, dynamic> _$PostModelToJson(PostModel instance) => <String, dynamic>{
       'user': instance.user.toJson(),
       'image': instance.image.map((e) => e.toJson()).toList(),
       'content': instance.content,
-      'hasMyPost': instance.hasMyPost,
       'likeNumber': instance.likeNumber,
+      'cmtNumber': instance.cmtNumber,
       'likeUser': instance.likeUser,
       'created_at': instance.created_at.toIso8601String(),
     };

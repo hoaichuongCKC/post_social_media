@@ -1,9 +1,10 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:post_media_social/config/scaffold_message.dart';
-import 'package:post_media_social/core/hive/user_hive.dart';
 import 'package:post_media_social/firebase_options.dart';
 import 'config/export.dart';
 
@@ -12,7 +13,13 @@ void main() async {
 
   await configureDependencies();
 
-  await Hive.initFlutter();
+  Directory? tempDir = await getExternalStorageDirectory();
+
+  String tempPath = tempDir!.path;
+
+  print(tempPath);
+
+  await Hive.initFlutter(tempPath);
 
   Hive.registerAdapter(UserHiveAdapter());
 

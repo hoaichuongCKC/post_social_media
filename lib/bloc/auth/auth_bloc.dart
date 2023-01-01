@@ -18,10 +18,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SubmitEvent>(_submitEvent);
     on<LogoutUser>(_handleLogout);
   }
-  @override
-  Future close() async {
-    super.close();
-  }
 
   _submitEvent(SubmitEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoadingState());
@@ -42,9 +38,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             case 200:
               emit(AuthSuccessState());
               final hive = UserHive(
+                id:bodyResponse.user.id,
                 accessToken: bodyResponse.accessToken,
                 tokenType: bodyResponse.tokenType,
                 displayName: bodyResponse.user.displayName,
+                username: bodyResponse.user.username,
                 avatar: bodyResponse.user.avatar,
                 imageBackground: bodyResponse.user.imageBackground,
               );
@@ -89,7 +87,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (statusCode) async {
           if (statusCode == 200) {
             emit(const AuthInitial());
-            await BoxUser.instance.deleteStorageToken();
           }
         },
       );

@@ -9,6 +9,7 @@ class CircleAvatarCst extends StatelessWidget {
     this.isHasBorder = false,
     this.widthBorder = 5.0,
     this.onPressed,
+    this.boxFit = BoxFit.cover,
   });
   final double radius;
   final bool isCameraIcon;
@@ -16,6 +17,7 @@ class CircleAvatarCst extends StatelessWidget {
   final bool isHasBorder;
   final VoidCallback? onPressed;
   final double widthBorder;
+  final BoxFit boxFit;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,7 +36,7 @@ class CircleAvatarCst extends StatelessWidget {
               shape: BoxShape.circle,
               color: AppColors.primary,
               image: DecorationImage(
-                fit: BoxFit.cover,
+                fit: boxFit,
                 image: CachedNetworkImageProvider(
                   urlAvatar,
                 ),

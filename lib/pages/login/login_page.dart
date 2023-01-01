@@ -200,8 +200,8 @@ class FooterLogin extends StatelessWidget {
                 } else {
                   loginType.value = LoginType.phone;
                 }
-                controllerfirst.text = "chuog123";
-                controllersecond.text = "withlove";
+                controllerfirst.text = "chuongheo";
+                controllersecond.text = "1234567";
               },
               child: Text(
                 text,

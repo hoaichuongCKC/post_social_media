@@ -10,7 +10,7 @@ abstract class UploadPostEvent extends Equatable {
 
 class SubmitPostEvent extends UploadPostEvent {
   final String content;
-  final File file;
+  final List<File> file;
   const SubmitPostEvent({
     required this.content,
     required this.file,

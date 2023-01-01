@@ -40,3 +40,12 @@ class OnRefreshDataEvent extends HomeEvent {
   @override
   List<Object> get props => [page, limit];
 }
+
+class AddNewPostEvent extends HomeEvent {
+  final dynamic post;
+
+  const AddNewPostEvent({required this.post});
+
+  @override
+  List<Object> get props => [post];
+}

@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:post_media_social/core/hive/user_hive.dart';
 import 'package:post_media_social/core/response/response.dart';
 import 'package:post_media_social/models/post.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +7,7 @@ import '../../core/api/api.dart';
 
 abstract class PostDataSource {
   Future<DataResponse<List<PostModel>>> getListPost(int page, int limit);
-  Future<DataResponse<String>> createPost(String content, File file);
+  Future<DataResponse<String>> createPost(String content, List<File> listFile);
 }
 
 class PostDataSourceImpl implements PostDataSource {
@@ -25,17 +23,9 @@ class PostDataSourceImpl implements PostDataSource {
     final uri = Uri.parse(
         "${getApi.BASE_URL}${getApi.postUrl}?page=$page&limit=$limit");
 
-    // get token
-    final getStorage = await BoxUser.instance.getData();
-
-    final headers = {
-      "Authorization": "${getStorage.tokenType} ${getStorage.accessToken}",
-      "Accept": "application/json",
-    };
-
     http.MultipartRequest request = http.MultipartRequest('POST', uri);
-
-    request.headers.addAll(headers);
+    print(getApi.headers);
+    request.headers.addAll(getApi.headers);
 
     //send request up to server
     http.StreamedResponse response = await request.send();
@@ -55,37 +45,47 @@ class PostDataSourceImpl implements PostDataSource {
   }
 
   @override
-  Future<DataResponse<String>> createPost(String content, File file) async {
+  Future<DataResponse<String>> createPost(
+      String content, List<File> listFile) async {
     //uri
-    final uri = Uri.parse("${getApi.BASE_URL}${getApi.postUrl}");
-
-    // get token
-    final getStorage = await BoxUser.instance.getData();
-
-    final headers = {
-      "Authorization": "${getStorage.tokenType} ${getStorage.accessToken}",
-      "Accept": "application/json",
-    };
+    final uri = Uri.parse("${getApi.BASE_URL}${getApi.createPostUrl}");
 
     http.MultipartRequest request = http.MultipartRequest('POST', uri);
 
-    request.headers.addAll(headers);
+    //add header uri
+    request.headers.addAll(getApi.headers);
 
+    //add field
     request.fields.addAll({"content": content});
 
-    http.MultipartFile multipartFile =
-        await http.MultipartFile.fromPath('image', file.path);
+    Map<String, dynamic> rebody = {};
 
-    //add filed file
-    request.files.add(multipartFile);
+    //add file
+    if (listFile.isNotEmpty) {
+      if (listFile.length == 1) {
+        http.MultipartFile multipartFile =
+            await http.MultipartFile.fromPath('image[]', listFile[0].path);
 
-    //send request up to server
+        //add filed file
+        request.files.add(multipartFile);
+      } else {
+        for (File file in listFile) {
+          http.MultipartFile multipartFile =
+              await http.MultipartFile.fromPath('image[]', file.path);
+
+          //add filed file
+          request.files.add(multipartFile);
+        }
+      }
+    }
+
     http.StreamedResponse response = await request.send();
 
-    //body data
-    final reBody = json.decode(await response.stream.bytesToString());
+    rebody = json.decode(await response.stream.bytesToString());
 
-    final bodyConvert = json.encode(reBody["message"]);
+    //body data
+
+    final bodyConvert = rebody["message"];
 
     return DataResponse<String>(
         data: bodyConvert, statusCode: response.statusCode);
