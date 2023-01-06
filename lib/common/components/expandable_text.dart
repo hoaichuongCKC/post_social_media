@@ -27,7 +27,7 @@ class ExpandableTextState extends State<ExpandableText> {
     const widgetColor = Colors.black;
     TextSpan link = TextSpan(
         text: _readMore ? "... Read more" : " Read less",
-        style: GoogleFonts.robotoMono(
+        style: GoogleFonts.roboto(
           color: colorClickableText,
           fontSize: 12,
           fontWeight: FontWeight.w400,
@@ -66,7 +66,7 @@ class ExpandableTextState extends State<ExpandableText> {
         if (textPainter.didExceedMaxLines) {
           textSpan = TextSpan(
             text: _readMore ? widget.text.substring(0, endIndex) : widget.text,
-            style: GoogleFonts.robotoMono(
+            style: GoogleFonts.roboto(
               color: widgetColor,
               fontSize: 14.0,
             ),
@@ -75,7 +75,7 @@ class ExpandableTextState extends State<ExpandableText> {
         } else {
           textSpan = TextSpan(
             text: widget.text,
-            style: GoogleFonts.robotoMono(
+            style: GoogleFonts.roboto(
               color: widgetColor,
               fontSize: 14.0,
               height: 1.5,

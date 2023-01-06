@@ -52,7 +52,7 @@ class _BodyUploadPostState extends State<BodyUploadPost> {
         elevation: 0.0,
         title: Text(
           'Upload post',
-          style: GoogleFonts.robotoMono(
+          style: GoogleFonts.roboto(
             fontSize: 22.0,
             color: AppColors.dark,
             fontWeight: FontWeight.w500,
@@ -108,7 +108,7 @@ class _BodyUploadPostState extends State<BodyUploadPost> {
                         controller: somethingText,
                         maxLines: 5,
                         minLines: 1,
-                        style: GoogleFonts.robotoMono(
+                        style: GoogleFonts.roboto(
                           fontSize: 16.0,
                           color: AppColors.dark,
                           fontWeight: FontWeight.w400,
@@ -120,7 +120,7 @@ class _BodyUploadPostState extends State<BodyUploadPost> {
                               "${boxUser.displayName}, What are you thinking?",
                           filled: true,
                           fillColor: AppColors.disable.withOpacity(0.2),
-                          hintStyle: GoogleFonts.robotoMono(
+                          hintStyle: GoogleFonts.roboto(
                             fontSize: 13.0,
                             color: AppColors.disable,
                             fontWeight: FontWeight.w400,
@@ -140,11 +140,13 @@ class _BodyUploadPostState extends State<BodyUploadPost> {
                                   _image = await sl
                                       .get<CameraServiceApp>()
                                       .pickMultiImage() as List<XFile>;
-                                  _imageFile = await sl
-                                      .get<ImageResolveApp>()
-                                      .compressAndGetListFile(
-                                          _image!, boxUser.username);
-                                  setState(() {});
+                                  if (_image != null) {
+                                    _imageFile = await sl
+                                        .get<ImageCompressService>()
+                                        .compressAndGetListFile(
+                                            _image!, boxUser.username);
+                                    setState(() {});
+                                  }
                                 },
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -163,7 +165,7 @@ class _BodyUploadPostState extends State<BodyUploadPost> {
                                         ? const SizedBox()
                                         : Text(
                                             '${_imageFile!.length} ảnh đã được chọn',
-                                            style: GoogleFonts.robotoMono(
+                                            style: GoogleFonts.roboto(
                                                 fontSize: 14.0,
                                                 color: AppColors.primary),
                                           )

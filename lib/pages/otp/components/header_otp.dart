@@ -34,7 +34,7 @@ class HeaderOtp extends StatelessWidget {
                           alignment: Alignment.centerLeft,
                           child: Text(
                             "Verified",
-                            style: GoogleFonts.robotoMono(
+                            style: GoogleFonts.roboto(
                               fontSize: 20.0,
                               color: AppColors.dark,
                               fontWeight: FontWeight.w500,
@@ -47,7 +47,7 @@ class HeaderOtp extends StatelessWidget {
                           alignment: Alignment.centerLeft,
                           child: Text(
                             "OTP code",
-                            style: GoogleFonts.robotoMono(
+                            style: GoogleFonts.roboto(
                               fontSize: 20.0,
                               color: AppColors.dark,
                               fontWeight: FontWeight.w500,

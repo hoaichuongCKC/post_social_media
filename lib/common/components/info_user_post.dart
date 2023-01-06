@@ -1,6 +1,5 @@
+import 'package:post_media_social/bloc/home/home_bloc.dart';
 import 'package:post_media_social/config/export.dart';
-import 'package:post_media_social/core/api/api.dart';
-import 'package:post_media_social/models/user.dart';
 
 class InfoUserPost extends StatelessWidget {
   const InfoUserPost({
@@ -9,13 +8,15 @@ class InfoUserPost extends StatelessWidget {
     this.minHeight = 50,
     required this.height,
     this.isComment = false,
-    required this.user,
+    required this.postModel,
+    required this.indexList,
   });
   final double maxHeight;
   final double minHeight;
   final double height;
   final bool isComment;
-  final UserModel user;
+  final PostModel postModel;
+  final int indexList;
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +39,9 @@ class InfoUserPost extends StatelessWidget {
                   Align(
                     alignment: Alignment.topCenter,
                     child: CircleAvatar(
-                      key: ValueKey(user.avatar),
+                      key: ValueKey(postModel.user.avatar),
                       backgroundImage: CachedNetworkImageProvider(
-                        sl.get<Api>().BASE_URL + user.avatar,
+                        sl.get<Api>().BASE_URL + postModel.user.avatar,
                       ),
                       backgroundColor: Colors.transparent,
                       radius: isComment ? 20 : 30.0,
@@ -57,7 +58,7 @@ class InfoUserPost extends StatelessWidget {
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              user.displayName,
+                              postModel.user.displayName,
                               style: AppStyleText.smallStyleDefault,
                             ),
                           ),
@@ -70,10 +71,12 @@ class InfoUserPost extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 SvgPicture.asset("assets/icons/stopwatch.svg"),
-                                const FittedBox(
+                                FittedBox(
                                   child: Text(
-                                    '1m',
-                                    style: TextStyle(
+                                    postModel.created_at
+                                        .toIso8601String()
+                                        .getCurrentTimePost(),
+                                    style: GoogleFonts.roboto(
                                       fontSize: 12.0,
                                       fontWeight: FontWeight.w300,
                                       color: AppColors.disable,
@@ -99,11 +102,25 @@ class InfoUserPost extends StatelessWidget {
                     : box.values.cast<UserHive>().toList();
 
                 if (boxUser.isNotEmpty) {
-                  if (boxUser[0].id == user.id) {
-                    return Align(
-                      alignment: Alignment.topCenter,
-                      child: SvgPicture.asset("assets/icons/trash.svg"),
-                    );
+                  if (boxUser[0].id == postModel.user.id) {
+                    if (boxUser.isNotEmpty) {
+                      return Align(
+                        alignment: Alignment.topCenter,
+                        child: InkWell(
+                          onTap: () {
+                            final homeBloc = context.read<HomeBloc>();
+                            homeBloc.add(DeletePostEvent(
+                                postId: postModel.postId, index: indexList));
+                          },
+                          radius: 30,
+                          customBorder: const CircleBorder(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SvgPicture.asset("assets/icons/trash.svg"),
+                          ),
+                        ),
+                      );
+                    }
                   }
                 }
                 return const SizedBox();

@@ -15,7 +15,7 @@ PostModel _$PostModelFromJson(Map<String, dynamic> json) => PostModel(
       content: json['content'] as String,
       likeNumber: json['likeNumber'] as int,
       cmtNumber: json['cmtNumber'] as int,
-      likeUser: json['likeUser'] as List<dynamic>? ?? [],
+      likeUser: json['likeUser'] as bool,
       created_at: DateTime.parse(json['created_at'] as String),
     );
 

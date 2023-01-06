@@ -2,43 +2,47 @@
 import 'package:post_media_social/config/export.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
-abstract class PusherFailure {}
+class PusherConfig {
+  static const String appKey = "31c2f5e93dfea03a434d";
 
-class ErrorPusher extends PusherFailure {
-  final String message;
-  ErrorPusher({
-    required this.message,
-  });
+  static const String cluster = "ap1";
 }
 
 class AppPusher {
-  final String _apiKey = "31c2f5e93dfea03a434d";
-
-  final String _cluster = "ap1";
-
-  final PusherChannelsFlutter _pusherClient =
+  final PusherChannelsFlutter pusherClient =
       PusherChannelsFlutter.getInstance();
 
   Future initPusher(
-      {required Function(PusherEvent) onEvent,
-      required Function(String message, int? code, dynamic error) onError,
+      {required dynamic Function(dynamic)? onEvent,
+      Function(String message, int? code, dynamic error)? onError,
       required String channelName}) async {
     try {
-      await _pusherClient.init(
-        apiKey: _apiKey,
-        cluster: _cluster,
+      await pusherClient.init(
+          apiKey: PusherConfig.appKey,
+          cluster: PusherConfig.cluster,
+          onError: onError,
+          authParams: {
+            'headers': sl.get<Api>().headers,
+          }
+          // authEndpoint: "<Your Authendpoint>",
+          // onAuthorizer: onAuthorizer
+          );
+
+      await pusherClient.subscribe(
+        channelName: channelName,
         onEvent: onEvent,
-        onError: onError,
-        // authEndpoint: "<Your Authendpoint>",
-        // onAuthorizer: onAuthorizer
       );
-      await _pusherClient.subscribe(channelName: channelName);
-      await _pusherClient.connect();
+
+      await pusherClient.connect();
     } catch (e) {
       debugPrint("ERROR: $e");
-      return ErrorPusher(message: e.toString());
     }
   }
 
-  Future disconnectPusher() async => _pusherClient.disconnect();
+  Future trigger(String channelName, String eventName,
+          Map<String, dynamic> data) async =>
+      await pusherClient.trigger(PusherEvent(
+          channelName: channelName, eventName: eventName, data: data));
+
+  Future disconnect() async => await pusherClient.disconnect();
 }

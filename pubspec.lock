@@ -341,10 +341,10 @@ packages:
     dependency: transitive
     description:
       name: firebase_auth_web
-      sha256: bf8f3093c141abd0a624e0244864154d9db694682ba0cc1fcfdf60ecb6f7f2e3
+      sha256: b6de47a9059ef51f8d9ae20b765755165155a2c69b369a5ce23378c9de39ca9f
       url: "https://pub.dev"
     source: hosted
-    version: "5.2.2"
+    version: "5.2.3"
   firebase_core:
     dependency: "direct main"
     description:
@@ -430,6 +430,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  flutter_local_notifications:
+    dependency: "direct main"
+    description:
+      name: flutter_local_notifications
+      sha256: "293995f94e120c8afce768981bd1fa9c5d6de67c547568e3b42ae2defdcbb4a0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "13.0.0"
+  flutter_local_notifications_linux:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications_linux
+      sha256: "8f6c1611e0c4a88a382691a97bb3c3feb24cc0c0b54152b8b5fb7ffb837f7fbf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
+  flutter_local_notifications_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_local_notifications_platform_interface
+      sha256: "5ec1feac5f7f7d9266759488bc5f76416152baba9aa1b26fe572246caa00d1ab"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.0"
+  flutter_native_timezone:
+    dependency: "direct main"
+    description:
+      name: flutter_native_timezone
+      sha256: ed7bfb982f036243de1c068e269182a877100c994f05143c8b26a325e28c1b02
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -601,13 +633,13 @@ packages:
     source: hosted
     version: "2.6.2"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
-      sha256: a3715e3bc90294e971cb7dc063fbf3cd9ee0ebf8604ffeafabd9e6f16abbdbe6
+      sha256: "910f85bce16fb5c6f614e117efa303e85a1731bb0081edf3604a2ae6e9a3cc91"
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.0"
+    version: "0.17.0"
   io:
     dependency: transitive
     description:
@@ -1021,6 +1053,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.16"
+  timezone:
+    dependency: "direct main"
+    description:
+      name: timezone
+      sha256: "24c8fcdd49a805d95777a39064862133ff816ebfffe0ceff110fb5960e557964"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.9.1"
   timing:
     dependency: transitive
     description:

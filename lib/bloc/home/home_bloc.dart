@@ -1,14 +1,14 @@
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: unnecessary_import, depend_on_referenced_packages
 
 import 'dart:async';
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:post_media_social/config/export.dart';
+import 'package:post_media_social/config/scaffold_message.dart';
 import 'package:post_media_social/core/error/error.dart';
 import 'package:post_media_social/core/response/response.dart';
-import 'package:post_media_social/models/post.dart';
 import 'package:post_media_social/services/repositories/post_repo.dart';
-
 part 'home_event.dart';
 part 'home_state.dart';
 
@@ -18,24 +18,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<LoadPostEvent>(_handleLoadPost);
     on<LoadMorePostEvent>(_handleLoadMorePost);
     on<AddNewPostEvent>(_onAddNewPost);
+    on<DeletePostEvent>(_onDeletePost);
     on<OnRefreshDataEvent>((event, emit) {
       final state = this.state;
       if (state is HomeSuccessfulState) {
         state.listPost.clear();
+        state.listBuild.clear();
       }
-      add(LoadPostEvent(page: event.page, limit: event.limit));
+
+      add(LoadPostEvent());
     });
   }
 
   FutureOr<void> _handleLoadPost(
       LoadPostEvent event, Emitter<HomeState> emit) async {
-    final state = this.state;
-    if (state is HomeInitial) {
-      emit(HomeLoadingState());
-    }
+    emit(HomeLoadingState());
 
     try {
-      final result = await postRepoImpl.getListPost(event.page, event.limit);
+      final result = await postRepoImpl.getListPost();
 
       result.fold(
         (left) {
@@ -48,20 +48,30 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         (DataResponse<List<PostModel>> dataResponse) {
           switch (dataResponse.statusCode) {
             case 200:
-              emit(HomeSuccessfulState(
-                  listPost: dataResponse.data, hasLoadMore: true));
+              emit(
+                HomeSuccessfulState(
+                  listPost: dataResponse.data,
+                  isLoadMore: true,
+                  stateLoad: const LoadDataInit(),
+                  listBuild: dataResponse.data.skip(0).take(5).toList(),
+                ),
+              );
+
               break;
             case 201:
               emit(const HomeErrorState(message: "I don't know anything"));
               break;
             case 400:
-              emit(const HomeErrorState(message: "BAD REQUEST"));
+              emit(const HomeErrorState(message: badRequest));
               break;
             case 401:
-              emit(const HomeErrorState(message: "UNAUTHOIRES"));
+              emit(const HomeErrorState(message: unauthorized));
               break;
             case 500:
-              emit(const HomeErrorState(message: "SERVER ERROR"));
+              emit(const HomeErrorState(message: serverError));
+              break;
+            case 502:
+              AppSnackbar.showMessage("BAD GATEWAY");
               break;
             default:
           }
@@ -75,36 +85,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   FutureOr<void> _handleLoadMorePost(
       LoadMorePostEvent event, Emitter<HomeState> emit) async {
     final state = this.state;
-    final result = await postRepoImpl.getListPost(event.page, event.limit);
+    final currentGetPage = event.page * event.limit;
+    if (state is HomeSuccessfulState) {
+      final listMore = List<PostModel>.from(state.listPost)
+          .skip(currentGetPage)
+          .take(event.limit)
+          .toList();
 
-    result.fold(
-      (left) {
-        if (left is InternetFailure) {
-        } else if (left is ServerFailure) {}
-      },
-      (DataResponse<List<PostModel>> dataResponse) {
-        if (dataResponse.statusCode == 200) {
-          if (state is HomeSuccessfulState) {
-            if (dataResponse.data.isEmpty) {
-              emit(
-                HomeSuccessfulState(
-                    listPost: state.listPost,
-                    hasLoadMore: false,
-                    stateLoad: LoadDataEmtpy()),
-              );
-            } else {
-              emit(
-                HomeSuccessfulState(
-                    listPost: List<PostModel>.from(state.listPost)
-                      ..addAll(dataResponse.data),
-                    hasLoadMore: false,
-                    stateLoad: SuccessfulMoreData()),
-              );
-            }
-          }
-        }
-      },
-    );
+      if (listMore.isEmpty) {
+        emit(state.copyWith(isLoadMore: false, stateLoad: LoadDataEmtpy()));
+      } else {
+        emit(state.copyWith(
+            listBuild: List<PostModel>.from(state.listBuild)..addAll(listMore),
+            isLoadMore: false,
+            stateLoad: SuccessfulMoreData()));
+      }
+    }
   }
 
   Future<void> _onAddNewPost(
@@ -114,10 +110,56 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final postMap = jsonDecode(event.post)["data"];
 
       final postModel = PostModel.fromJson(postMap);
+      emit(state.copyWith(
+        listBuild: List<PostModel>.from(state.listBuild)..insert(0, postModel),
+        isLoadMore: false,
+      ));
+    }
+  }
 
-      emit(HomeSuccessfulState(
-          listPost: List<PostModel>.from(state.listPost)..insert(0, postModel),
-          hasLoadMore: false));
+  FutureOr<void> _onDeletePost(
+      DeletePostEvent event, Emitter<HomeState> emit) async {
+    final state = this.state;
+    if (state is HomeSuccessfulState) {
+      AppSnackbar.showMessage("Deleted Successful");
+      emit(state.copyWith(
+        listBuild: List<PostModel>.from(state.listBuild)..removeAt(event.index),
+        isLoadMore: false,
+      ));
+    }
+    try {
+      final result = await postRepoImpl.deletePost(event.postId);
+      result.fold(
+        (left) {
+          if (left is InternetFailure) {
+            AppSnackbar.showMessage("NO INTERNET");
+          } else if (left is ServerFailure) {
+            AppSnackbar.showMessage("SERVER ERROR");
+          }
+        },
+        (DataResponse<String> dataResponse) {
+          switch (dataResponse.statusCode) {
+            case 200:
+              break;
+            case 201:
+              AppSnackbar.showMessage("Error from server");
+              break;
+            case 400:
+              AppSnackbar.showMessage(badRequest);
+              break;
+            case 401:
+              AppSnackbar.showMessage(unauthorized);
+              break;
+            case 500:
+              AppSnackbar.showMessage(serverError);
+              break;
+            default:
+          }
+        },
+      );
+    } catch (e) {
+      AppSnackbar.showMessage(e.toString());
+      debugPrint(e.toString());
     }
   }
 }

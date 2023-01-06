@@ -1,13 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:post_media_social/core/response/response.dart';
 import 'package:post_media_social/models/post.dart';
 import 'package:http/http.dart' as http;
 import '../../core/api/api.dart';
 
 abstract class PostDataSource {
-  Future<DataResponse<List<PostModel>>> getListPost(int page, int limit);
+  Future<DataResponse<List<PostModel>>> fetchPost();
+
   Future<DataResponse<String>> createPost(String content, List<File> listFile);
+
+  Future<DataResponse<String>> deletePost(int postId);
 }
 
 class PostDataSourceImpl implements PostDataSource {
@@ -18,10 +22,9 @@ class PostDataSourceImpl implements PostDataSource {
   });
 
   @override
-  Future<DataResponse<List<PostModel>>> getListPost(int page, int limit) async {
+  Future<DataResponse<List<PostModel>>> fetchPost() async {
     //uri
-    final uri = Uri.parse(
-        "${getApi.BASE_URL}${getApi.postUrl}?page=$page&limit=$limit");
+    final uri = Uri.parse("${getApi.BASE_URL}${getApi.postUrl}");
 
     http.MultipartRequest request = http.MultipartRequest('POST', uri);
 
@@ -33,15 +36,17 @@ class PostDataSourceImpl implements PostDataSource {
     //body data
     final reBody = json.decode(await response.stream.bytesToString());
 
-    final bodyConvert = json.encode(reBody["data"]);
+    if (response.statusCode == 401) {
+      return DataResponse<List<PostModel>>(
+          data: const [], statusCode: response.statusCode);
+    } else {
+      final bodyConvert = json.encode(reBody["data"]);
 
-    final List<PostModel> list =
-        List<PostModel>.from(json.decode(bodyConvert).map((x) {
-      return PostModel.fromJson(x);
-    }));
+      final List<PostModel> list = await compute(postFromJson, bodyConvert);
 
-    return DataResponse<List<PostModel>>(
-        data: list, statusCode: response.statusCode);
+      return DataResponse<List<PostModel>>(
+          data: list, statusCode: response.statusCode);
+    }
   }
 
   @override
@@ -78,6 +83,33 @@ class PostDataSourceImpl implements PostDataSource {
         }
       }
     }
+
+    http.StreamedResponse response = await request.send();
+
+    rebody = json.decode(await response.stream.bytesToString());
+
+    //body data
+
+    final bodyConvert = rebody["message"];
+
+    return DataResponse<String>(
+        data: bodyConvert, statusCode: response.statusCode);
+  }
+
+  @override
+  Future<DataResponse<String>> deletePost(int postId) async {
+    //uri
+    final uri = Uri.parse("${getApi.BASE_URL}${getApi.deletePostUrl}");
+
+    http.MultipartRequest request = http.MultipartRequest('POST', uri);
+
+    //add header uri
+    request.headers.addAll(getApi.headers);
+
+    //add field
+    request.fields.addAll({"post_id": "$postId"});
+
+    Map<String, dynamic> rebody = {};
 
     http.StreamedResponse response = await request.send();
 

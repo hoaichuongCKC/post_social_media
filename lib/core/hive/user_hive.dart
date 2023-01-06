@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, unnecessary_overrides, must_be_immutable
 
 import 'package:post_media_social/config/export.dart';
-import 'package:post_media_social/core/api/api.dart';
 
 part 'user_hive.g.dart';
 
@@ -57,6 +56,7 @@ abstract class UserQuery {
 
 class BoxUser extends UserQuery {
   BoxUser._();
+  late int userId;
 
   static BoxUser instance = BoxUser._();
 
@@ -72,6 +72,7 @@ class BoxUser extends UserQuery {
     if (data.isEmpty) {
       return null;
     }
+    userId = data[0].id;
     return data[0];
   }
 
@@ -88,7 +89,11 @@ class BoxUser extends UserQuery {
   @override
   Future setData(UserHive hive) async {
     final box = await initBox();
+
+    userId = hive.id;
+
     sl.get<Api>().setupHeader(hive.accessToken, hive.tokenType);
+
     await box.add(hive);
   }
 

@@ -1,9 +1,6 @@
 import 'package:post_media_social/bloc/auth/auth_bloc.dart';
 import 'package:post_media_social/bloc/user/user_bloc.dart';
-import 'package:post_media_social/common/widgets/circle_avatar.dart';
 import 'package:post_media_social/config/export.dart';
-import 'package:post_media_social/core/api/api.dart';
-import 'package:post_media_social/models/user.dart';
 import 'dart:io';
 
 class ProfilePage extends StatelessWidget {
@@ -83,7 +80,7 @@ class _BodyProfileState extends State<BodyProfile> {
         const SizedBox(height: 15.0),
         Text(
           getData.displayName,
-          style: GoogleFonts.robotoMono(
+          style: GoogleFonts.roboto(
             fontSize: 18.0,
             color: AppColors.dark,
             fontWeight: FontWeight.w400,
@@ -107,7 +104,7 @@ class _BodyProfileState extends State<BodyProfile> {
                   children: [
                     Text(
                       getData.totalLikeNumber.toString(),
-                      style: GoogleFonts.robotoMono(
+                      style: GoogleFonts.roboto(
                         fontSize: 16,
                         color: AppColors.primary,
                         fontWeight: FontWeight.w400,
@@ -115,7 +112,7 @@ class _BodyProfileState extends State<BodyProfile> {
                     ),
                     Text(
                       'Likes',
-                      style: GoogleFonts.robotoMono(
+                      style: GoogleFonts.roboto(
                         fontSize: 14,
                         color: AppColors.dark,
                         fontWeight: FontWeight.w400,
@@ -139,7 +136,7 @@ class _BodyProfileState extends State<BodyProfile> {
                   children: [
                     Text(
                       getData.postNumber.toString(),
-                      style: GoogleFonts.robotoMono(
+                      style: GoogleFonts.roboto(
                         fontSize: 16,
                         color: AppColors.primary,
                         fontWeight: FontWeight.w400,
@@ -147,7 +144,7 @@ class _BodyProfileState extends State<BodyProfile> {
                     ),
                     Text(
                       'Post',
-                      style: GoogleFonts.robotoMono(
+                      style: GoogleFonts.roboto(
                         fontSize: 14,
                         color: AppColors.dark,
                         fontWeight: FontWeight.w400,
@@ -172,7 +169,7 @@ class _BodyProfileState extends State<BodyProfile> {
                       ),
                       content: Text(
                         "Do you sure logout app?",
-                        style: GoogleFonts.robotoMono(
+                        style: GoogleFonts.roboto(
                           fontSize: 14.0,
                           color: AppColors.dark,
                         ),
@@ -183,7 +180,7 @@ class _BodyProfileState extends State<BodyProfile> {
                           onPressed: () => _authBloc.add(LogoutUser()),
                           child: Text(
                             "yes",
-                            style: GoogleFonts.robotoMono(
+                            style: GoogleFonts.roboto(
                               fontSize: 14.0,
                               color: AppColors.primary,
                             ),
@@ -193,7 +190,7 @@ class _BodyProfileState extends State<BodyProfile> {
                           onPressed: () => AppRoutes.pop(),
                           child: Text(
                             "No",
-                            style: GoogleFonts.robotoMono(
+                            style: GoogleFonts.roboto(
                               fontSize: 14.0,
                               color: AppColors.dark,
                             ),
@@ -234,7 +231,7 @@ class _BodyProfileState extends State<BodyProfile> {
             child: InkWell(
               onTap: () async {
                 final result = await sl<CameraServiceApp>().pickImage() as File;
-                final file = await sl<ImageResolveApp>()
+                final file = await sl<ImageCompressService>()
                     .compressAndGetFile(result, username);
                 bloc.add(ChangeBackground(file: file));
               },
@@ -252,7 +249,7 @@ class _BodyProfileState extends State<BodyProfile> {
                     children: [
                       Text(
                         'Invalid url background image',
-                        style: GoogleFonts.robotoMono(
+                        style: GoogleFonts.roboto(
                           fontSize: 12.0,
                           color: AppColors.error,
                         ),

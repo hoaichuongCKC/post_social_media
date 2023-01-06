@@ -4,7 +4,10 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:post_media_social/bloc/comment/comment_bloc.dart';
 import 'package:post_media_social/bloc/home/home_bloc.dart';
+import 'package:post_media_social/bloc/like/like_bloc.dart';
+import 'package:post_media_social/bloc/notification/notification_bloc.dart';
 import 'package:post_media_social/config/scaffold_message.dart';
 import 'package:post_media_social/firebase_options.dart';
 import 'config/export.dart';
@@ -14,15 +17,13 @@ void main() async {
 
   await configureDependencies();
 
-  Directory? tempDir = await getExternalStorageDirectory();
+  Directory? tempDir = await getApplicationDocumentsDirectory();
 
-  String tempPath = tempDir!.path;
+  String tempPath = tempDir.path;
 
   await Hive.initFlutter(tempPath);
 
   Hive.registerAdapter(UserHiveAdapter());
-
-  await BoxUser.instance.initBox();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -35,8 +36,21 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<HomeBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<HomeBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<LikeBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<NotificationBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<CommentBloc>(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Post',

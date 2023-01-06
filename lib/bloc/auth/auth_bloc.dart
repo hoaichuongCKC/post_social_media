@@ -38,7 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             case 200:
               emit(AuthSuccessState());
               final hive = UserHive(
-                id:bodyResponse.user.id,
+                id: bodyResponse.user.id,
                 accessToken: bodyResponse.accessToken,
                 tokenType: bodyResponse.tokenType,
                 displayName: bodyResponse.user.displayName,

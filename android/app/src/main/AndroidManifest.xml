@@ -34,5 +34,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        //flutter locals notification setup
+        <!-- <activity
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"> -->
     </application>
 </manifest>

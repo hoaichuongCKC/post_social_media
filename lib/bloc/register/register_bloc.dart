@@ -44,6 +44,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
               emit(RegisterSuccessState());
 
               final hive = UserHive(
+                id: bodyResponse.user.id,
                 accessToken: bodyResponse.accessToken,
                 tokenType: bodyResponse.tokenType,
                 displayName: bodyResponse.user.displayName,

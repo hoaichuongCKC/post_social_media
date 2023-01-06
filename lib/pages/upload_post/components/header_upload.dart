@@ -1,5 +1,3 @@
-import 'package:post_media_social/common/widgets/circle_avatar.dart';
-import 'package:post_media_social/core/api/api.dart';
 import '../../../config/export.dart';
 
 class HeaderUploadPost extends StatelessWidget {
@@ -26,7 +24,7 @@ class HeaderUploadPost extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Text(
                   boxUser.displayName,
-                  style: GoogleFonts.robotoMono(
+                  style: GoogleFonts.roboto(
                     fontSize: 18.0,
                     color: AppColors.dark,
                     fontWeight: FontWeight.w400,

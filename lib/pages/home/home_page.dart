@@ -1,7 +1,10 @@
 // ignore_for_file: unnecessary_null_comparison
 import 'package:flutter/services.dart';
+import 'package:post_media_social/bloc/auth/auth_bloc.dart';
+import 'package:post_media_social/bloc/comment/comment_bloc.dart';
 import 'package:post_media_social/bloc/home/home_bloc.dart';
 import 'package:post_media_social/config/export.dart';
+import 'package:post_media_social/config/scaffold_message.dart';
 import 'package:post_media_social/core/pusher/pusher_app.dart';
 import 'package:post_media_social/pages/home/components/bottom_nav_home.dart';
 import 'package:post_media_social/pages/home/components/header_home.dart';
@@ -9,8 +12,6 @@ import 'package:post_media_social/pages/home/components/list_post.dart';
 import 'package:post_media_social/pages/home/components/tab_home.dart';
 import 'package:post_media_social/pages/profile/profile_page.dart';
 import 'dart:io' show Platform, exit;
-
-import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,13 +25,15 @@ class _HomePageState extends State<HomePage> {
 
   final int _limit = 5;
 
+  final double _thresholdPixel = 100.0;
+
   bool _canLoadMore = true;
+
+  bool _isLoading = false;
 
   late ScrollController _scrollController;
 
   late HomeBloc _homeBloc;
-
-  //Declare pusher
 
   final String _channelName = "post";
 
@@ -41,20 +44,26 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
     _homeBloc = BlocProvider.of<HomeBloc>(context)
-      ..add(LoadPostEvent(limit: _limit, page: _page))
+      ..add(LoadPostEvent())
       ..stream.listen((state) {
         if (state is HomeSuccessfulState) {
+          if (state.stateLoad is SuccessfulMoreData) {
+            // ngăn cản sự loadmore quá nhiều khi scroll đạt tới ngưỡng quy định
+            _isLoading = false;
+          }
           if (state.stateLoad is LoadDataEmtpy) {
+            _page--;
             _canLoadMore = false;
+            _isLoading = false;
           }
         }
       });
-
+    //listen date event new post from pusher
     _pusherClient.initPusher(
-      onEvent: (PusherEvent event) {
+      onEvent: (event) {
         if (event.data.isNotEmpty) {
+          AppSnackbar.showMessage("Has a new notification");
           _homeBloc.add(AddNewPostEvent(post: event.data));
         }
       },
@@ -65,12 +74,13 @@ class _HomePageState extends State<HomePage> {
     _scrollController = ScrollController()
       ..addListener(() {
         if (!_scrollController.hasClients) return;
-
         if (_scrollController.hasClients &&
-            _scrollController.position.pixels ==
-                _scrollController.position.maxScrollExtent) {
-          if (_canLoadMore) {
+            _scrollController.position.pixels >
+                _scrollController.position.maxScrollExtent - _thresholdPixel) {
+          // Only scroll when _canLoadMore = true and _isLoading = false
+          if (_canLoadMore && !_isLoading) {
             _page++;
+            _isLoading = true;
             _homeBloc.add(LoadMorePostEvent(page: _page, limit: _limit));
           }
         }
@@ -81,21 +91,50 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     super.dispose();
     indexPage.dispose();
-    _pusherClient.disconnectPusher();
+    // _authBloc.close();
     _scrollController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavHome(
-        onTap: (int index) {
-          indexPage.value = index;
-        },
-      ),
-      backgroundColor: AppColors.light,
-      body: SafeArea(
-        child: ValueListenableBuilder(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<AuthBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<CommentBloc>(),
+        ),
+      ],
+      child: Scaffold(
+        bottomNavigationBar: BlocBuilder<HomeBloc, HomeState>(
+          buildWhen: (previous, current) {
+            if (current is HomeSuccessfulState) {
+              return current.isLoadMore == true &&
+                  current.stateLoad is LoadDataInit &&
+                  current.listPost.isNotEmpty;
+            }
+            return previous != current;
+          },
+          builder: (context, state) {
+            if (state is HomeSuccessfulState) {
+              return BottomNavHome(
+                onTap: (int index) {
+                  indexPage.value = index;
+                  if (index == 0) {
+                    // _scrollController.animateTo(0.0,
+                    //     duration: const Duration(milliseconds: 450),
+                    //     curve: Curves.linear);
+                  }
+                },
+              );
+            }
+            return const SizedBox();
+          },
+        ),
+        backgroundColor: AppColors.light,
+        body: SafeArea(
+          child: ValueListenableBuilder(
             valueListenable: indexPage,
             builder: (context, int currentIndex, child) {
               return IndexedStack(
@@ -105,7 +144,9 @@ class _HomePageState extends State<HomePage> {
                   const ProfilePage(),
                 ],
               );
-            }),
+            },
+          ),
+        ),
       ),
     );
   }
@@ -119,10 +160,25 @@ class _HomePageState extends State<HomePage> {
           }
           return true;
         },
-        child: BlocBuilder<HomeBloc, HomeState>(
+        child: BlocConsumer<HomeBloc, HomeState>(
+          listenWhen: (previous, current) => current is HomeErrorState,
+          listener: (context, state) {
+            if (state is HomeErrorState) {
+              if (state.message == unauthorized) {
+                PopupControl.instance.showTokenExpired(
+                  context,
+                  () {
+                    context.read<AuthBloc>().add(LogoutUser());
+                  },
+                );
+              }
+            }
+          },
           buildWhen: (previous, current) {
             if (current is HomeSuccessfulState) {
-              return current.hasLoadMore == true;
+              return current.isLoadMore == true &&
+                  current.stateLoad is LoadDataInit &&
+                  current.listPost.isNotEmpty;
             }
             return previous != current;
           },
@@ -144,43 +200,48 @@ class _HomePageState extends State<HomePage> {
                 strokeWidth: 1.5,
                 onRefresh: () async {
                   _page = 0;
+                  _canLoadMore = true;
+                  _isLoading = false;
 
                   _homeBloc.add(OnRefreshDataEvent(page: _page, limit: _limit));
                 },
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(
-                            maxHeight: 220,
-                            minHeight: 180,
-                          ),
-                          child: SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.2,
-                            width: double.infinity,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                HeaderHome(size: MediaQuery.of(context).size),
-                                const TabHome(),
-                                const Divider(),
-                              ],
+                child: Scrollbar(
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxHeight: 220,
+                              minHeight: 180,
+                            ),
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.2,
+                              width: double.infinity,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  HeaderHome(size: MediaQuery.of(context).size),
+                                  const TabHome(),
+                                  const Divider(),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const ListPostHome(),
-                    const SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: 20.0,
-                        child: null,
-                      ),
-                    )
-                  ],
+                      const ListPostHome(),
+                      const SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 20.0,
+                          child: null,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               );
             }

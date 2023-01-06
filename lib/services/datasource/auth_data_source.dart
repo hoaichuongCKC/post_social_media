@@ -6,16 +6,19 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:post_media_social/bloc/register/register_bloc.dart';
 import 'package:post_media_social/config/export.dart';
-import 'package:post_media_social/core/api/api.dart';
 import 'package:post_media_social/core/response/response.dart';
-import 'package:post_media_social/models/user.dart';
 
 abstract class AuthDataSource {
   Future<BodyResponse> authUser(String username, String password);
+
   Future<DataResponse<dynamic>> me(String accessToken, String tokenType);
+
   Future<int> logout();
+
   Future<BodyResponse> authPhone(String phone);
+
   Future<BodyResponse> register(SubmitRegisterEvent eventRegister);
+
   Future<BodyResponse> uploadFile(File file, String uriRequest);
 }
 

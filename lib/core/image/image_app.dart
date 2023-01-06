@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:post_media_social/config/export.dart';
 
-class ImageResolveApp {
+class ImageCompressService {
   final Completer<Size> _completer = Completer();
 
   Future<Size> calculateImageDimension(String url) {

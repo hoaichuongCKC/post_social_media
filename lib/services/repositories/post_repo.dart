@@ -11,10 +11,12 @@ import 'package:post_media_social/models/post.dart';
 import 'package:post_media_social/services/datasource/post_data_source.dart';
 
 abstract class PostRepo {
-  Future<Either<Failure, DataResponse<List<PostModel>>>> getListPost(
-      int page, int limit);
+  Future<Either<Failure, DataResponse<List<PostModel>>>> getListPost();
+
   Future<Either<Failure, DataResponse<String>>> createPost(
       String content, List<File> list);
+
+  Future<Either<Failure, DataResponse<String>>> deletePost(int postId);
 }
 
 class PostRepoImpl extends PostRepo {
@@ -28,11 +30,10 @@ class PostRepoImpl extends PostRepo {
   });
 
   @override
-  Future<Either<Failure, DataResponse<List<PostModel>>>> getListPost(
-      int page, int limit) async {
+  Future<Either<Failure, DataResponse<List<PostModel>>>> getListPost() async {
     if (await networkInfo.isConnected) {
       try {
-        final data = await dataSource.getListPost(page, limit);
+        final data = await dataSource.fetchPost();
         return Right(data);
       } on ServerException {
         return Left(ServerFailure());
@@ -48,6 +49,20 @@ class PostRepoImpl extends PostRepo {
     if (await networkInfo.isConnected) {
       try {
         final data = await dataSource.createPost(content, list);
+        return Right(data);
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      return Left(InternetFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, DataResponse<String>>> deletePost(int postId) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final data = await dataSource.deletePost(postId);
         return Right(data);
       } on ServerException {
         return Left(ServerFailure());

@@ -94,7 +94,7 @@ class BottomNavHome extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     label,
-                    style: GoogleFonts.robotoMono(
+                    style: GoogleFonts.roboto(
                       fontSize: 14.0,
                     ),
                   ),

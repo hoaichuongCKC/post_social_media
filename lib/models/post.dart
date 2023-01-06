@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, non_constant_identifier_names
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -6,6 +8,12 @@ import 'package:post_media_social/models/image_post.dart';
 import 'package:post_media_social/models/user.dart';
 
 part 'post.g.dart';
+
+List<PostModel> postFromJson(String bodyConvert) => List<PostModel>.from(
+      json.decode(bodyConvert).map((x) {
+        return PostModel.fromJson(x);
+      }),
+    );
 
 @JsonSerializable(explicitToJson: true)
 class PostModel extends Equatable {
@@ -15,7 +23,7 @@ class PostModel extends Equatable {
   final String content;
   final int likeNumber;
   final int cmtNumber;
-  final List likeUser;
+  final bool likeUser;
   final DateTime created_at;
   const PostModel({
     required this.postId,

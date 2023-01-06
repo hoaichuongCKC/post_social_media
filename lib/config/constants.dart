@@ -10,9 +10,11 @@ const String otpPath = "$loginPath/otp";
 const String registerPath = "/register";
 //[Follow: home]
 const String homePath = "/home";
+const String imageDetailPath = "$homePath/image-detail";
 const String uploadPostPath = "$homePath/upload-post";
 const String myPostPath = "$homePath/my-post";
 const String notificationPath = "$homePath/notification";
+const String commentPath = "$homePath/comment";
 
 //-------------------------[define widget loading]-------------------------------
 
@@ -25,3 +27,9 @@ final spinkit = SpinKitFadingCircle(
     );
   },
 );
+
+//-------------------------[define status code api]-------------------------------
+
+const String unauthorized = "UNAUTHORIZEd";
+const String badRequest = "BAD REQUEST";
+const String serverError = "SERVER ERROR";

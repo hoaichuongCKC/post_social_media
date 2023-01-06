@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:post_media_social/common/animations/screen_push/slide_to_left.dart';
 import 'package:post_media_social/config/constants.dart';
+import 'package:post_media_social/pages/comment/comment_page.dart';
+import 'package:post_media_social/pages/image_detail/image_detail_page.dart';
 import 'package:post_media_social/pages/home/home_page.dart';
 import 'package:post_media_social/pages/login/login_page.dart';
 import 'package:post_media_social/pages/my_post/my_post_page.dart';
@@ -33,12 +35,25 @@ class AppRoutes {
       //[follow home]
       case homePath:
         return MaterialPageRoute(builder: (_) => const HomePage());
+
+      case imageDetailPath:
+        final String url = settings.arguments as String;
+
+        return MaterialPageRoute(
+            builder: (_) => ImageDetailPage(urlImage: url));
+
       case uploadPostPath:
         return SlideToLeft(child: const UploadPostPage());
+
       case myPostPath:
         return SlideToLeft(child: const MyPostPage());
+
       case notificationPath:
         return SlideToLeft(child: const NotificationPage());
+      case commentPath:
+        final int postId = settings.arguments as int;
+        return MaterialPageRoute(builder: (_) => CommentPage(postId: postId));
+
       default:
         return _errorRoute();
     }

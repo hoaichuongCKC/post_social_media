@@ -12,11 +12,16 @@ import 'package:post_media_social/services/datasource/auth_data_source.dart';
 abstract class AuthRepo {
   Future<Either<Failure, BodyResponse>> authUser(
       String username, String password);
+
   Future<Either<Failure, DataResponse<dynamic>>> me(
       String accessToken, String tokenType);
+
   Future<Either<Failure, int>> logout();
+
   Future<Either<Failure, BodyResponse>> authPhone(String phone);
+
   Future<Either<Failure, BodyResponse>> register(SubmitRegisterEvent event);
+
   Future<Either<Failure, BodyResponse>> uploadFile(
       File file, String uriRequest);
 }

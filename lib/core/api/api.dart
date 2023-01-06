@@ -4,7 +4,7 @@ import 'package:post_media_social/core/hive/user_hive.dart';
 
 class Api {
   final String BASE_URL =
-      "https://c19e-2405-4802-a216-e970-b9a6-5261-840c-879a.ap.ngrok.io";
+      "https://4fc4-2405-4802-a216-e970-ad40-d84a-1156-b73c.ap.ngrok.io";
 
   // [Auth controller]
   final String loginUrl = "/api/auth/login";
@@ -17,6 +17,17 @@ class Api {
   // [Post controller]
   final String postUrl = "/api/post-control/get-post";
   final String createPostUrl = "/api/post-control/create-post";
+  final String deletePostUrl = "/api/post-control/delete-post";
+
+  // [Like controller]
+  final String likePostUrl = "/api/like-control/update-like";
+
+  // [Noti controller]
+  final String getNotiUrl = "/api/noti-control/get-notification";
+
+  // [Comment controller]
+  final String getCommentUrl = "/api/cmt-control/get-comment";
+  final String createCommentUrl = "/api/cmt-control/create-comment";
 
   Map<String, String> _headers = {};
 
@@ -26,20 +37,21 @@ class Api {
     _headers = {
       "Authorization": "$tokenType $accessToken",
       "Accept": "application/json",
+      'Content-Type': 'application/json',
     };
   }
 
-  initApi() async {
+  handleGetHeader() async {
     final getStorage = await BoxUser.instance.getData();
     if (getStorage != null) {
-      _headers = {
+      return _headers = {
         "Authorization": "${getStorage.tokenType} ${getStorage.accessToken}",
         "Accept": "application/json",
       };
     }
   }
 
-  Api() {
-    initApi();
+  Api.initApi() {
+    handleGetHeader();
   }
 }

@@ -8,16 +8,7 @@ abstract class HomeEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadPostEvent extends HomeEvent {
-  final int page;
-  final int limit;
-  const LoadPostEvent({
-    required this.page,
-    required this.limit,
-  });
-  @override
-  List<Object> get props => [page, limit];
-}
+class LoadPostEvent extends HomeEvent {}
 
 class LoadMorePostEvent extends HomeEvent {
   final int page;
@@ -48,4 +39,14 @@ class AddNewPostEvent extends HomeEvent {
 
   @override
   List<Object> get props => [post];
+}
+
+class DeletePostEvent extends HomeEvent {
+  final int postId;
+  final int index;
+
+  const DeletePostEvent({required this.postId, required this.index});
+
+  @override
+  List<Object> get props => [postId, index];
 }

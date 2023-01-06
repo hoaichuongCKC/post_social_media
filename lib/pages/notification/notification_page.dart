@@ -1,27 +1,9 @@
+import 'package:post_media_social/bloc/notification/notification_bloc.dart';
 import 'package:post_media_social/common/popup/notification/popup_noti_control.dart';
 import 'package:post_media_social/config/export.dart';
+import 'package:post_media_social/core/pusher/pusher_app.dart';
 import 'package:post_media_social/pages/notification/components/item_noti.dart';
-
-final List<Map> listNotiToday = [
-  {
-    "avatarUrl":
-        "https://vtv1.mediacdn.vn/thumb_w/650/2019/2/20/img2-1550631553056774692039.jpg",
-    "username": "Hoàng Yến",
-    "comment": "Đẹp trai quá",
-    "image_post":
-        "https://vcdn1-giaitri.vnecdn.net/2022/10/24/-8754-1666626354.jpg?w=0&h=0&q=100&dpr=2&fit=crop&s=lbOz-YmE5jN8fir7u2R0Ng",
-    "created_at": 1,
-  },
-  {
-    "avatarUrl":
-        "https://nld.mediacdn.vn/291774122806476800/2022/8/8/1-16599673874711436824945.jpeg",
-    "username": "Chi pu",
-    "comment": "Hôm nay bạn hát thật hay",
-    "image_post":
-        "https://vcdn1-giaitri.vnecdn.net/2022/10/24/-8754-1666626354.jpg?w=0&h=0&q=100&dpr=2&fit=crop&s=lbOz-YmE5jN8fir7u2R0Ng",
-    "created_at": 3,
-  }
-];
+import 'package:post_media_social/pages/notification/components/list_today.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -32,7 +14,58 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
   final GlobalKey appbarKey = GlobalKey();
-  final listKey = GlobalKey<SliverAnimatedListState>();
+
+  final listKeyToday = GlobalKey<SliverAnimatedListState>();
+
+  final listKeyWeek = GlobalKey<SliverAnimatedListState>();
+
+  final AppPusher pusher = AppPusher();
+
+  final _channelName = "notification-post-user${BoxUser.instance.userId}";
+
+  late ScrollController _scrollController;
+
+  late NotificationBloc _notificationBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _notificationBloc = BlocProvider.of<NotificationBloc>(context);
+
+    if (_notificationBloc.state is NotificationInitial) {
+      _notificationBloc.add(LoadNoticationEvent());
+    }
+
+    _scrollController = ScrollController()
+      ..addListener(() {
+        if (!_scrollController.hasClients) return;
+
+        // if (_scrollController.hasClients &&
+        //     _scrollController.position.pixels < _thresholdPixel) {
+        //   // Only scroll when _canLoadMore = true and _isLoading = false
+        //   if (_canLoadMore && !_isLoading) {
+        //     _page++;
+        //     _isLoading = true;
+        //     // _notificationBloc.add(LoadMorePostEvent(page: _page, limit: _limit));
+        //   }
+        // }
+      });
+    pusher.initPusher(
+      onEvent: (event) {
+        if (event.data.isNotEmpty) {
+          _notificationBloc.add(AddNotiTodayEvent(noti: event.data));
+        }
+      },
+      channelName: _channelName,
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -51,120 +84,156 @@ class _NotificationPageState extends State<NotificationPage> {
           backgroundColor: AppColors.light,
           title: Text(
             "Notifications",
-            style: GoogleFonts.robotoMono(
-              fontSize: 22.0,
+            style: GoogleFonts.roboto(
+              fontSize: 20.0,
               color: AppColors.dark,
               fontWeight: FontWeight.w600,
             ),
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: InkWell(
-                onTap: () {
-                  PopupNotiControl.instance.showOption(appbarKey, context);
-                },
-                radius: 80.0,
-                customBorder: const CircleBorder(),
-                child: SvgPicture.asset(
-                  "assets/icons/dot.svg",
-                ),
-              ),
-            ),
-          ],
-          actionsIconTheme: const IconThemeData(color: AppColors.dark),
         ),
         backgroundColor: AppColors.light,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: CustomScrollView(
-            slivers: [
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-                sliver: SliverToBoxAdapter(
-                  child: Wrap(
-                    children: [
-                      Text(
-                        'You have ',
-                        style: GoogleFonts.robotoMono(
-                          fontSize: 14.0,
-                          color: AppColors.dark.withOpacity(0.6),
+        body: BlocBuilder<NotificationBloc, NotificationState>(
+          buildWhen: (previous, current) {
+            if (current is NotificationLoadSucessfulState) {
+              if (current.isFirstBuild) return true;
+            }
+            if (current is NotificationLoadingState) return true;
+
+            if (current is NotificationLoadErrorState) return true;
+
+            if (current is NotificationDataEmptyState) return true;
+
+            return false;
+          },
+          builder: (context, state) {
+            if (state is NotificationLoadingState) {
+              return Center(child: spinkit);
+            }
+
+            if (state is NotificationLoadErrorState) {
+              return Center(
+                child: Text(
+                  state.message,
+                  style: GoogleFonts.roboto(
+                    fontSize: 16.0,
+                  ),
+                ),
+              );
+            }
+
+            if (state is NotificationDataEmptyState) {
+              return Center(
+                child: Text(
+                  "Hiện tại chưa có thông báo nào!",
+                  style: GoogleFonts.roboto(
+                    fontSize: 16.0,
+                  ),
+                ),
+              );
+            }
+
+            if (state is NotificationLoadSucessfulState) {
+              return Scrollbar(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+                        sliver: SliverToBoxAdapter(
+                          child: Wrap(
+                            children: [
+                              Text(
+                                'You have ',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 14.0,
+                                  color: AppColors.dark.withOpacity(0.6),
+                                ),
+                              ),
+                              Text(
+                                '${state.listToday.length} notifications ',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 14.0,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                              Text(
+                                'today',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 14.0,
+                                  color: AppColors.dark.withOpacity(0.6),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      Text(
-                        '2 notifications ',
-                        style: GoogleFonts.robotoMono(
-                          fontSize: 14.0,
-                          color: AppColors.primary,
+                      SliverToBoxAdapter(
+                        child: Text(
+                          "Today",
+                          style: GoogleFonts.roboto(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                      Text(
-                        'today',
-                        style: GoogleFonts.robotoMono(
-                          fontSize: 14.0,
-                          color: AppColors.dark.withOpacity(0.6),
+                      ListNotiToday(listKeyToday: listKeyToday),
+                      SliverToBoxAdapter(
+                        child: Text(
+                          "This week",
+                          style: GoogleFonts.roboto(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
+                        sliver: SliverAnimatedList(
+                          key: listKeyWeek,
+                          initialItemCount: state.listWeek.length,
+                          itemBuilder: (context, index, animation) {
+                            final result = state.listWeek[index];
+                            final keyItem = GlobalKey();
+                            return InkWell(
+                              onLongPress: () {
+                                PopupNotiControl.instance.showDeleteItem(
+                                  context,
+                                  onTap: () {
+                                    state.listWeek.removeAt(index);
+                                    listKeyWeek.currentState!.removeItem(
+                                      index,
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                      (context, animation) => ItemNoti(
+                                        result: result,
+                                        animation: animation,
+                                        isCheckToday: false,
+                                      ),
+                                    );
+                                    AppRoutes.pop();
+                                  },
+                                );
+                              },
+                              onTap: () {},
+                              child: ItemNoti(
+                                key: keyItem,
+                                isCheckToday: false,
+                                result: result,
+                                animation: animation,
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: Text(
-                  "Today",
-                  style: GoogleFonts.robotoMono(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(0, 15, 0, 15),
-                sliver: SliverAnimatedList(
-                  key: listKey,
-                  initialItemCount: listNotiToday.length,
-                  itemBuilder: (context, index, animation) {
-                    final result = listNotiToday[index];
-                    final keyItem = GlobalKey();
-                    return InkWell(
-                      onLongPress: () {
-                        PopupNotiControl.instance.showDeleteItem(
-                          context,
-                          onTap: () {
-                            listNotiToday.removeAt(index);
-                            listKey.currentState!.removeItem(
-                              index,
-                              duration: const Duration(milliseconds: 300),
-                              (context, animation) => ItemNoti(
-                                result: result,
-                                animation: animation,
-                              ),
-                            );
-                            AppRoutes.pop();
-                          },
-                        );
-                      },
-                      onTap: () {},
-                      child: ItemNoti(
-                        key: keyItem,
-                        result: result,
-                        animation: animation,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Text(
-                  "This week",
-                  style: GoogleFonts.robotoMono(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
+              );
+            }
+            return const SizedBox();
+          },
         ),
       ),
     );
